@@ -1,0 +1,12 @@
+#! /bin/bash
+#$ -clear
+#$ -q 32c.q
+#$ -cwd
+#$ -V
+#$ -S /bin/bash
+#$ -o /scratch/gi/coop/perner/metameta/cluster_stdout
+#$ -j y
+
+
+#/work/gi/software/infernal-1.1.1/src/./cmsearch -o /scratch/gi/coop/perner/metameta/vents/cayman_rise_unpublished_beebe_21/preprocessed_reads/cmsearch_out_new --tblout /scratch/gi/coop/perner/metameta/vents/cayman_rise_unpublished_beebe_21/preprocessed_reads/cmsearch_out_table_new /work/gi/coop/perner/metameta/data/tRNA.cm /scratch/gi/coop/perner/metameta/vents/cayman_rise_unpublished_beebe_21/preprocessed_reads/beebe.fasta
+# /work/gi/software/infernal-1.1.1/src/./cmsearch -o /scratch/gi/coop/perner/metameta/vents/perner_sisters_peak_29/preprocessed_reads/cmsearch_out_new --tblout /scratch/gi/coop/perner/metameta/vents/perner_sisters_peak_29/preprocessed_reads/cmsearch_out_table_new /work/gi/coop/perner/metameta/data/Rfam.cm /scratch/gi/coop/perner/metameta/vents/perner_sisters_peak_29/preprocessed_reads/sisters.fasta

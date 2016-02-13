@@ -1,0 +1,14 @@
+#! /bin/bash
+#$ -clear
+#$ -q hpc.q
+#$ -cwd
+#$ -V
+#$ -S /bin/bash
+#$ -o /scratch/gi/coop/perner/metameta/cluster_stdout
+#$ -j y
+#$ -t 3-4
+
+#/work/gi/software/diamond-0.7.9/bin/./diamond makedb --in /scratch/gi/coop/perner/metameta/nr.gz -d /scratch/gi/coop/perner/metameta/nr
+# /work/gi/software/diamond-0.7.9/bin/./diamond blastx -d /scratch/gi/coop/perner/metameta/pfamA -q /scratch/gi/coop/perner/metameta/vents/xie_4143-1_33/preprocessed_reads/xie.fasta -a /scratch/gi/coop/perner/metameta/matches_xie -t /scratch/gi/coop/perner/metameta/temp
+ruby /work/gi/coop/perner/metameta/scripts/diamond.rb /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
+# ruby /work/gi/coop/perner/metameta/scripts/diamond_profile.rb /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
