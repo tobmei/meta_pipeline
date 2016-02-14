@@ -2,14 +2,15 @@
 module Preprocess
   def Preprocess.process(run, raw_reads, prepro_reads, pe, init_file)
     puts pe ? 'paired-end' : 'single-end'
-    if init_file == nil
-      puts "Warning: no matching vent found in meta file. Proceeding with default values"
-      init_file = {}
-      init_file[:fosmid] = 'n'
-      init_file[:adapter_seq] = ''
-    end
-    puts "fosmids: #{init_file[:fosmid]}"
-    puts "adapter_seq: #{init_file[:adapter_seq]}"
+#    if init_file == nil
+#      puts "Warning: no matching vent found in meta file. Proceeding with default values"
+#      init_file = {}
+#      init_file[:fosmid] = 'n'
+#      init_file[:adapter_seq] = ''
+#    end
+    puts "platform: #{init_file[:platform]}"
+    puts "fosmid based: #{init_file[:fosmid_based]}"
+    puts "adapter/tag sequence: #{init_file[:adapter_seq]}"
       
     run_nr = File.basename(run.sub('.fastq.gz',''))
     run_nr2 = pe ? "#{run_nr.match(/\D+\d+/)}_2" : ''
@@ -81,7 +82,7 @@ module Preprocess
     end
 
     
-    if init_file[:fosmid] == 'y'
+    if init_file[:fosmid_based] == 'y'
       #run seqclean on processed reads. generates .fasta.clean (-> trimmed .fasta) and .cln (-> trimming report) 
       puts "processing #{run}: seqclean"
       execute("#{Paths.fastq2fasqual} #{prepro_reads}/#{run_nr}")

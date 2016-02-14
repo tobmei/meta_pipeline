@@ -2,14 +2,16 @@ require_relative 'fastqc_analysis'
 require_relative 'preprocess'
 require_relative 'prot_seq_classification'
 require_relative 'modules/helper'
+require_relative 'modules/preprocess_summary'
+require_relative 'combine_functional_profiles'
 require 'optparse'
 
 options = {}
 
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: main.rb [options] <input_directory> ..."
-  opts.on('-i', '--init init', 'Init file') do |meta|
-    options[:meta] = meta
+  opts.on('-i', '--init init', 'Init file') do |init|
+    options[:init] = init
   end
   opts.on("-p", "--[no-]preprocessing", "Perform preprocessing steps") do |p|
     options[:preprocessing] = p
@@ -39,23 +41,36 @@ if options[:init] != nil && !File.exist?(options[:init])
   exit 1
 end
 
-ARGV.each do |dir| 
-  if !Dir.exists?(dir)
-    STDERR.puts "ERROR: Directory #{dir} does not exist."
-    exit 1
-  end
-end
 
 #parse init file
 init_file = Helper.parse_init_file(options[:init])
 
+#check for each vent in init file if it exists in <input_dir> and if raw reads are in FASTQ format
+#print init_file
 ARGV.each do |vent|
-  fastqc_summary = Hash.new
-  
-  raw_reads = "#{vent}/raw_reads"
-  prepro_reads = "#{vent}/preprocessed_reads"
-  
-  if options[:preprocessing]
+  if !Dir.exists?(dir)
+    STDERR.puts "ERROR: Directory #{dir} does not exist."
+    exit 1
+  end
+  if !init_file.has_key?(vent)
+    STDERR.puts "ERROR: vent #{vent} not found in init_file"
+    exit 1
+  end
+  if !Dir.exists?("#{vent}/raw_reads")
+    STDERR.puts "Directory #{vent}/raw_reads not found"
+    exit 1
+  end
+#TODO FastQ validator  
+end
+ 
+ 
+if options[:preprocessing]
+
+  ARGV.each do |vent|
+    fastqc_summary = Hash.new
+    raw_reads = "#{vent}/raw_reads"
+    prepro_reads = "#{vent}/preprocessed_reads"
+    
     `mkdir #{prepro_reads}` if !File.directory?(prepro_reads)
   
     #run fastqc on raw reads
@@ -69,7 +84,6 @@ ARGV.each do |vent|
     Dir.glob("#{raw_reads}/*fastq.gz") do |run|  
       run_nr = File.basename(run.sub('.fastq.gz',''))
       next if run_nr =~ /_2\z/
-      #next if File.exists?("#{prepro_reads}/#{run_nr}.fastq.gz")
       pe = run_nr =~ /_1\z/ ? true : false
       Preprocess.process(run, raw_reads, prepro_reads, pe, init_file[File.basename(vent)])
     end
@@ -82,40 +96,49 @@ ARGV.each do |vent|
     end
   end
   
-  if options[:classification]
+  #create preprocessing summary
+  Preprocess_summary.summary(ARGV)
+  
+end
+
+
+if options[:classification]
+
+  if !File.exists?("summary_file")
+    STDERR.puts 'No preprocess summary file found'
+    exit 1
+  end
+
+  classification_summary = Hash.new  
+  ARGV.each do |vent|
+    prepro_reads = "#{vent}/preprocessed_reads"
     profiles_dir = "#{vent}/profiles/functional/uproc"
     `mkdir #{profiles_dir}` if !File.directory?(profiles_dir)
-    
+
     #run uproc
     Dir.glob("#{prepro_reads}/*fastq.gz") do |run|  
       run_nr = File.basename(run.sub('.fastq.gz',''))
-#       next if File.exists?("#{profiles_dir}/#{run_nr}_uproc.txt")
       puts "processing #{run_nr}: uproc"
-      Prot_seq_classification.classify(run, profiles_dir, init_file[File.basename(vent)])
+      length = init_file[File.basename(vent)][:avg_length_preprocessed].to_i <= 200 ? '-s' : '-l'
+      puts length
+#     `uproc-dna -f -P 2 -c #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc_lessrestricitve.txt`
+#     `uproc-dna -p #{length} #{Paths.pfam27_uproc} #{Paths.model_uproc} #{run} > #{profiles_dir}/#{run_nr}_uproc_all.txt`
+     `uproc-dna -f #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc.txt` 
     end
-    profile_files_count = `ls #{profiles_dir}/*.txt | wc -l`.to_i
-    if profile_files_count > 1
-      `ruby combine_profiles.rb #{profiles_dir}/*.txt > #{profiles_dir}/uproc_combined.txt` if profile_files_count > 1
-      `grep -E '.*,.*,.*' #{profiles_dir}/uproc_combined.txt > #{profiles_dir}/classification_count.txt`
-      `grep -vE '.*,.*,.*' #{profiles_dir}/uproc_combined.txt > #{profiles_dir}/uproc_combined_new.txt`
-      `rm -f #{profiles_dir}/uproc_combined.txt`
-      `mv #{profiles_dir}/uproc_combined_new.txt #{profiles_dir}/uproc_combined.txt`
-    else
-      `grep -E '.*,.*,.*' #{profiles_dir}/*_uproc.txt > #{profiles_dir}/classification_count.txt`
-      `grep -vE '.*,.*,.*' #{profiles_dir}/*_uproc.txt > #{profiles_dir}/new`
-      `rm -f #{profiles_dir}/*_uproc.txt`
-      `mv #{profiles_dir}/new #{profiles_dir}/uproc.txt`
-    end
-    run taxy-pro
-    puts "processing taxy-pro for #{vent}"
-    length = init_file[File.basename(vent)][:avg_length].to_i < 200 ? 'S' : 'L'
-    puts length
-    if File.exists?("#{profiles_dir}/uproc_combined.txt") 
-      `octave #{Paths.taxy_pro}/taxy_script.m #{profiles_dir}/uproc_combined.txt #{length}`
-    else
-      `octave #{Paths.taxy_pro}/taxy_script.m #{profiles_dir}/uproc.txt #{length}`
-    end
+    summary = combine(profiles_dir)
+    classification_summary[vent] = summary
+    
   end
-  
-  
+    
 end
+
+#run taxy-pro
+ARGV.each do |vent|
+  puts "processing taxy-pro for #{vent}"
+  length = init_file[File.basename(vent)][:avg_length_preprocessed].to_i <= 200 ? 'S' : 'L'
+  puts length
+  `octave #{Paths.taxy_pro}/taxy_script.m #{profiles_dir}/uproc.txt #{length}`
+end
+  
+
+
