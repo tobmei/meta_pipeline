@@ -1,0 +1,136 @@
+
+
+uproc_hash = Hash.new
+diamond_hash = Hash.new
+uproc_count_hash = Hash.new
+diamond_count_hash = Hash.new
+  uproc_sum = 0
+  diamond_sum = 0
+
+ARGV.each do |vent| 
+  uproc = "#{vent}/profiles/functional/uproc"
+  diamond = "#{vent}/profiles/functional/diamond"
+  next if !File.exists?("#{uproc}/uproc.txt") ||  !File.exists?("#{diamond}/diamond.txt")
+  uproc_hash[vent] = Hash.new
+  diamond_hash[vent] = Hash.new
+  
+  File.open("#{uproc}/uproc.txt").each_line do |line|
+    line = line.split(',')
+    pfam = line[0].scan(/(PF\d\d\d\d\d)/)[0][0]
+    count = line[1].chomp.to_i
+    uproc_hash[vent][pfam] = uproc_hash[vent][pfam] == nil ? count : uproc_hash[vent][pfam]+count
+    uproc_sum += count
+  end
+  uproc_count_hash[vent] = uproc_sum
+    
+  
+  File.open("#{diamond}/diamond.txt").each_line do |line|
+    line = line.split(',')
+    pfam = line[0].scan(/(PF\d\d\d\d\d)/)[0][0]
+    count = line[1].chomp.to_i
+    diamond_hash[vent][pfam] = diamond_hash[vent][pfam] == nil ? count : diamond_hash[vent][pfam]+count
+    diamond_sum += count
+  end
+  diamond_count_hash[vent] = diamond_sum
+  
+end  
+  
+  uproc_hash.each do |vent,phash|
+    phash.each do |pfam,count|
+      uproc_hash[vent][pfam] = count / uproc_count_hash[vent].to_f
+    end
+  end
+  
+  diamond_hash.each do |vent,phash|
+    phash.each do |pfam,count|
+      diamond_hash[vent][pfam] = count / diamond_count_hash[vent].to_f
+    end
+  end
+  
+#  print uproc_count_hash
+#  print uproc_hash
+# uproc_hash.each do |k,v|
+#   v.each do |a,b|
+#     puts "#{a},#{b}"
+##     break
+#   end
+# end
+ 
+h = Hash.new
+
+max = 0.0
+ARGV.each do |vent|
+
+  h[vent] = Hash.new
+  
+  uproc_hash[vent].each do |pfam,u_prozant|
+    d_prozant = diamond_hash[vent][pfam] != nil ? diamond_hash[vent][pfam] : 0.0
+    h[vent][pfam] = u_prozant - d_prozant
+  end
+  
+  diamond_hash[vent].each do |pfam,d_prozant|
+    if !uproc_hash[vent].has_key?(pfam)
+      u_prozant = 0.0
+      h[vent][pfam] = u_prozant - d_prozant
+    end
+
+  end
+  
+  
+end
+
+pfam_arr = []
+
+h.each do |vent,hash|
+  hash.each do |pfam,v|
+    pfam_arr.push(pfam) if !pfam_arr.include?(pfam)
+  end
+end
+
+#puts pfam_arr.size
+#puts h.size
+
+h.each do |vent,prozhash|
+  prozhash.each do |pfam,prozant|
+    puts "#{pfam},#{prozant}"
+  end
+end
+    
+#avg_hash = Hash.new
+
+#pfam_arr.each do |pfam|
+#  avg_hash[pfam] = []
+#  h.each do |vent,prozhash|
+#    if prozhash.has_key?(pfam)
+#      avg_hash[pfam].push(prozhash[pfam].abs)
+#    end
+#  end
+#end
+# puts avg_hash
+      
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
