@@ -8,13 +8,13 @@ diamond_count_hash = Hash.new
   diamond_sum = 0
 
 ARGV.each do |vent| 
-  uproc = "#{vent}/profiles/functional/uproc"
-  diamond = "#{vent}/profiles/functional/diamond"
-  next if !File.exists?("#{uproc}/uproc.txt") ||  !File.exists?("#{diamond}/diamond.txt")
+#  uproc = "#{vent}/profiles/functional/uproc"
+#  diamond = "#{vent}/profiles/functional/diamond"
+#  next if !File.exists?("#{uproc}/uproc.txt") ||  !File.exists?("#{diamond}/diamond.txt")
   uproc_hash[vent] = Hash.new
   diamond_hash[vent] = Hash.new
   
-  File.open("#{uproc}/uproc.txt").each_line do |line|
+  File.open("uproc_#{vent}.txt").each_line do |line|
     line = line.split(',')
     pfam = line[0].scan(/(PF\d\d\d\d\d)/)[0][0]
     count = line[1].chomp.to_i
@@ -24,7 +24,7 @@ ARGV.each do |vent|
   uproc_count_hash[vent] = uproc_sum
     
   
-  File.open("#{diamond}/diamond.txt").each_line do |line|
+  File.open("diamond_#{vent}.txt").each_line do |line|
     line = line.split(',')
     pfam = line[0].scan(/(PF\d\d\d\d\d)/)[0][0]
     count = line[1].chomp.to_i
@@ -49,12 +49,7 @@ end
   
 #  print uproc_count_hash
 #  print uproc_hash
-# uproc_hash.each do |k,v|
-#   v.each do |a,b|
-#     puts "#{a},#{b}"
-##     break
-#   end
-# end
+
  
 h = Hash.new
 
@@ -90,11 +85,12 @@ end
 #puts pfam_arr.size
 #puts h.size
 
-h.each do |vent,prozhash|
-  prozhash.each do |pfam,prozant|
-    puts "#{pfam},#{prozant}"
-  end
-end
+#für boxplots
+#h.each do |vent,prozhash|
+#  prozhash.each do |pfam,prozant|
+#    puts "#{pfam},#{prozant}"
+#  end
+#end
     
 #avg_hash = Hash.new
 
@@ -108,9 +104,48 @@ end
 #end
 # puts avg_hash
       
+#average für korellation
+u_avg = Hash.new
+d_avg = Hash.new
 
-      
+pfam_arr.each do |pfam|
+  uproc_hash.each do |vent,prozhash|
+    if prozhash.has_key?(pfam)
+      if u_avg[pfam] == nil 
+        u_avg[pfam] = []
+      end
+      u_avg[pfam].push(prozhash[pfam].abs)
+    end
+  end
+end
+u_avg.each do |pfam,arr|
+  u_avg[pfam] = arr.inject(0.0) { |sum, el| sum + el } / arr.size
+end
 
+#puts u_avg
+
+pfam_arr.each do |pfam|
+  diamond_hash.each do |vent,prozhash|
+    if prozhash.has_key?(pfam)
+      if d_avg[pfam] == nil 
+        d_avg[pfam] = []
+      end
+      d_avg[pfam].push(prozhash[pfam].abs)
+    end
+  end
+end
+d_avg.each do |pfam,arr|
+  d_avg[pfam] = arr.inject(0.0) { |sum, el| sum + el } / arr.size
+end
+
+#puts d_avg
+
+pfam_arr.each do |pfam|
+  if u_avg.has_key?(pfam) && d_avg.has_key?(pfam)
+    puts "#{u_avg[pfam]},#{d_avg[pfam]}"
+  end
+end
+  
 
 
 
