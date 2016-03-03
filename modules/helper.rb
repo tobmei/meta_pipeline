@@ -56,6 +56,22 @@ module Helper
     return init
   end
   
+  def Helper.parse_summary_file(file)
+    summary = Hash.new
+    File.open(file).each_line do |line|
+      line = line.split(",")
+      next if line[0] == 'vent'
+      vent = line[0].chomp
+      avg_length = line[4].chomp
+      if vent == nil || avg_length == nil || avg_length == ''
+	STDERR.puts "Error while parsing summary file. Empty field detected"
+	exit 1
+      end
+      summary[vent] = avg_length
+    end
+    return summary
+  end
+  
 end
 
 

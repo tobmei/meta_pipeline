@@ -1,6 +1,5 @@
 require_relative 'fastqc_analysis'
 require_relative 'preprocess'
-require_relative 'prot_seq_classification'
 require_relative 'modules/helper'
 require_relative 'modules/preprocess_summary'
 require_relative 'combine_functional_profiles'
@@ -48,11 +47,11 @@ init_file = Helper.parse_init_file(options[:init])
 #check for each vent in init file if it exists in <input_dir> and if raw reads are in FASTQ format
 #print init_file
 ARGV.each do |vent|
-  if !Dir.exists?(dir)
-    STDERR.puts "ERROR: Directory #{dir} does not exist."
+  if !Dir.exists?(vent)
+    STDERR.puts "ERROR: Directory #{vent} does not exist."
     exit 1
   end
-  if !init_file.has_key?(vent)
+  if !init_file.has_key?(File.basename(vent))
     STDERR.puts "ERROR: vent #{vent} not found in init_file"
     exit 1
   end
@@ -77,7 +76,7 @@ if options[:preprocessing]
     Dir.glob("#{raw_reads}/*fastq.gz") do |run|  
       run_nr = File.basename(run.sub('.fastq.gz',''))
       puts "processing #{run_nr}: fastqc"
-      fastqc_summary = Fastqc_analysis.run(run)
+     fastqc_summary = Fastqc_analysis.run(run)
     end
 
     #perform preprocessing steps on raw reads
@@ -96,7 +95,7 @@ if options[:preprocessing]
     end
   end
   
-  #create preprocessing summary
+#   create preprocessing summary
   Preprocess_summary.summary(ARGV)
   
 end
@@ -104,41 +103,72 @@ end
 
 if options[:classification]
 
-  if !File.exists?("summary_file")
+  if !File.exists?("stats/preprocess_summary.csv")
     STDERR.puts 'No preprocess summary file found'
     exit 1
   end
 
+  summary_file = Helper.parse_summary_file("stats/preprocess_summary.csv")
+  
   classification_summary = Hash.new  
   ARGV.each do |vent|
+    `mkdir #{vent}/profiles` if !Dir.exists?("#{vent}/profiles")
+    `mkdir #{vent}/profiles/functional`
+    `mkdir #{vent}/profiles/taxonomic`
     prepro_reads = "#{vent}/preprocessed_reads"
     profiles_dir = "#{vent}/profiles/functional/uproc"
-    `mkdir #{profiles_dir}` if !File.directory?(profiles_dir)
+    taxy_dir = "#{vent}/profiles/taxonomic/Taxy"
+   # next if !File.exists?("#{profiles_dir}/diamond.txt") 
+    `mkdir #{profiles_dir}` if !Dir.exists?(profiles_dir)
+    `mkdir #{taxy_dir}`if !Dir.exists?(taxy_dir)
 
     #run uproc
     Dir.glob("#{prepro_reads}/*fastq.gz") do |run|  
       run_nr = File.basename(run.sub('.fastq.gz',''))
       puts "processing #{run_nr}: uproc"
-      length = init_file[File.basename(vent)][:avg_length_preprocessed].to_i <= 200 ? '-s' : '-l'
+      length = summary_file[File.basename(vent)].to_i <= 200 ? '-s' : '-l'
       puts length
 #     `uproc-dna -f -P 2 -c #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc_lessrestricitve.txt`
 #     `uproc-dna -p #{length} #{Paths.pfam27_uproc} #{Paths.model_uproc} #{run} > #{profiles_dir}/#{run_nr}_uproc_all.txt`
-     `uproc-dna -f #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc.txt` 
+      `uproc-dna -fc #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc.txt` 
     end
-    summary = combine(profiles_dir)
-    classification_summary[vent] = summary
-    
+    summary = combine(profiles_dir,'uproc')
+    classification_summary[vent] = summary  
   end
-    
-end
-
-#run taxy-pro
-ARGV.each do |vent|
-  puts "processing taxy-pro for #{vent}"
-  length = init_file[File.basename(vent)][:avg_length_preprocessed].to_i <= 200 ? 'S' : 'L'
-  puts length
-  `octave #{Paths.taxy_pro}/taxy_script.m #{profiles_dir}/uproc.txt #{length}`
-end
   
+  #write classification summary to file
+  if !File.exists?("stats/classification_summary.csv")
+    File.open("stats/classification_summary.csv", 'w') { |f|
+      f.puts "vent,classified,unclassified,total"
+    }
+  end
+  
+  File.open("stats/classification_summary.csv", 'a') { |f|
+    classification_summary.each do |vent,s|
+      f.print "#{File.basename(vent)},"
+      f.print "#{s[:classified]},"
+      f.print "#{s[:unclassified]},"
+      f.puts "#{s[:total]}"
+    end
+  }
+  #end
+
+  #run taxy-pro
+  ARGV.each do |vent|
+    profiles_dir = "#{vent}/profiles/functional/uproc"
+    next if !File.exists?("#{profiles_dir}/uproc.txt")
+    puts "processing taxy-pro for #{vent}"
+    length = summary_file[File.basename(vent)].to_i <= 200 ? 'S' : 'L'
+    puts length
+    `octave /work/gi/software/taxy-pro/taxy_script.m #{profiles_dir}/uproc.txt #{length}`
+  end
+  
+  
+  #downstream analysis
+  
+  
+  
+  
+end
 
 

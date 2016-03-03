@@ -26,7 +26,24 @@ module Preprocess_summary
       
     end
     
-    #TODO write summary to file 
+    #write summary to file 
+    if !File.exists?("stats/preprocess_summary.csv")
+      File.open("stats/preprocess_summary.csv", 'w') { |f|
+        f.puts "vent,sequences_raw,sequences_preprocessed,avg_length_raw,avg_length_preprocessed,total_length_raw,total_length_preprocessed"
+     }
+    end
+    
+    File.open("stats/preprocess_summary.csv", 'a') { |f|
+    summary.each do |vent,s|
+      f.print "#{File.basename(vent)},"
+      f.print "#{s['sequences_raw']},"
+      f.print "#{s['sequences_preprocessed']},"
+      f.print "#{s['avg_length_raw']},"
+      f.print "#{s['avg_length_preprocessed']},"
+      f.print "#{s['total_length_raw']},"
+      f.puts "#{s['total_length_preprocessed']}"
+    end
+  }
     
   end
 end

@@ -9,13 +9,30 @@ require(gridExtra, lib.loc = '/work/gi/software/R-3.0.2/packages')
 
 args <- commandArgs(TRUE)
 
-# mat <- read.csv(args[1], header=TRUE, sep=",")
-# env <- read.csv(args[2], header=TRUE, sep="\t")
-
+mat <- read.csv(args[1], header=TRUE, sep=",")
+# mat2 <- read.csv(args[2], header=TRUE, sep=",")
+env <- read.csv(args[2], header=TRUE, sep="\t")
+# 
 # geo_mat <- read.csv(args[2], header=FALSE, sep=",")
-list <- read.csv(args[1], header=TRUE, sep="\t")
-# list2 <- read.csv(args[2], header=TRUE, sep="\t")
+# list <- read.csv(args[1], header=TRUE, sep=",")
+# list2 <- read.csv(args[2], header=TRUE, sep=",")
 # list3 <- read.csv(args[3], header=FALSE, sep=",")
+# 
+# pdf('neu/bla.pdf')
+# 
+# corr_eqn <- function(x,y, digits = 2) {
+#   corr_coef <- round(cor(x, y), digits = digits)
+#   paste("r =", corr_coef)
+# }
+# label = corr_eqn(list$uproc, list$tara)
+# ggplot(data=list,aes(x=list$uproc,y=list$tara)) + geom_point() + geom_smooth(colour = "red", method = 'lm') +
+# # geom_text(x = 0.25, y = 0.75, label = corr_eqn(list$uproc, list$tara), parse = TRUE) + 
+# ggtitle(paste("meta_pipeline vs tara - order frequencies,",label))
+# 
+# dev.off()
+# ratio  <- list$uproc/list$tara
+# hist(ratio,xlim=c(0,5), breaks=c(-Inf,seq(0,5,0.1),Inf),freq=T, ylim=c(0,200))
+
 # y <- list[order(-list$V8),]
 # head(y)
 # plot(as.vector(list$V3),as.vector(list$V8),main="sisters peak", xlab="sequence length", ylab="similarity score")
@@ -26,7 +43,7 @@ list <- read.csv(args[1], header=TRUE, sep="\t")
 # boxplot(data.frame(list2))
 
 # library(ggplot2)
-# ggplot(data = data.frame(list), las = 2, aes(x = platform, y = Sequenzen)) + geom_boxplot(width = 0.8) + theme_bw() + scale_y_log10(labels = comma)
+# ggplot(data = data.frame(list), las = 2, aes(x = pfam, y = prozant)) + geom_boxplot() +  theme(axis.text.x=element_blank())# + scale_y_log10(labels = comma)
   
 # list.agg <- aggregate(list$frequency,by=list(phylum = list$phylum, superkingdom = list$superkingdom), mean) 
 # list.agg.ord <- list.agg[order(-list.agg$x),]
@@ -78,9 +95,9 @@ list <- read.csv(args[1], header=TRUE, sep="\t")
 # plot <- ggplot(list.ord[1:10,], aes(x=factor(pfam, levels=unique(pfam)), y=count)) + geom_bar(stat='identity') 
 # plot + xlab("PFAM") + ylab("Anzahl") + scale_y_continuous(labels = comma) + coord_flip()
 
-head(list)
-plot <- ggplot(list, aes(x=pfam, y=count, fill=tool)) + geom_bar(stat='identity', position='dodge') 
-plot + xlab("PFAM") + ylab("Anzahl") + scale_y_continuous(labels = comma) + coord_flip()
+# head(list)
+# plot <- ggplot(list, aes(x=pfam, y=count, fill=tool)) + geom_bar(stat='identity', position='dodge') 
+# plot + xlab("PFAM") + ylab("Anzahl") + scale_y_continuous(labels = comma) + coord_flip()
 
 # list.ord <- list[order(-list$V2),]
 # plot1 <- ggplot(list.ord[1:10,], aes(x=factor(V1, levels=unique(V1)), y=V2)) + geom_bar(stat='identity') + ggtitle("diamond") + xlab("PFAM") + ylab("count") + scale_y_continuous(labels = comma) + coord_flip()
@@ -101,7 +118,7 @@ plot + xlab("PFAM") + ylab("Anzahl") + scale_y_continuous(labels = comma) + coor
 # par(op)
 # 
 # list <- read.table(args[3], header=TRUE, sep=",")
-# attach(list)
+# attach(list)cumsu
 # blo <- tapply(frequency, taxon, mean)
 # blu <- as.matrix(blo)
 # ble <- blu[order(blu[,1], decreasing=TRUE), ]
@@ -168,26 +185,41 @@ plot + xlab("PFAM") + ylab("Anzahl") + scale_y_continuous(labels = comma) + coor
 # corrplot(a, p.mat = p.adj, method='circle', type='lower',tl.srt=45, tl.col='black', tl.cex=0.6)
 
 #PCOA
-# d = vegdist(mat, method="bray")
-# pcoa<-cmdscale(d)
-# with(env, levels(ocean))
-# colvec <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99')
-# with(env, colvec[ocean])
-# plot(pcoa, type='n', xlab='MDS1', ylab='MDS2')
-# with(env, points(pcoa, col = colvec[env$ocean], pch = 15, bg = colvec[env$ocean]))
-# with(env, legend("bottomleft", legend = levels(env$ocean), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
-# 
-# 
+d = vegdist(mat, method="bray")
+write.csv(as.matrix(d),file="ddistmat.csv")
+pcoa<-cmdscale(d, eig=TRUE, add=TRUE)
+eig <- eigenvals(pcoa)
+eigs <- eig / sum(eig)
+v1 <- round(eigs[1]*100,digits=2)
+v2 <- round(eigs[2]*100,digits=2)
+x <- pcoa$points[,1]
+y <- pcoa$points[,2]
+with(env, levels(project))
+colvec <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99')
+with(env, colvec[project])
+plot(x,y, type='n', xlab=paste("MDS1 (",v1,"%)"), ylab=paste("MDS2 (",v2,"%)"), main='PCoA functional profile')
+with(env, points(x,y, col = colvec[env$project], pch = 15, bg = colvec[env$project]))
+with(env, legend("topright", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
+# # 
+# # 
 # nmds <- metaMDS(mat)
-# with(env, levels(ocean))
+# with(env, levels(project))
 # colvec <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99')
-# with(env, colvec[ocean])
-# plot(nmds, type='n')
+# with(env, colvec[project])
+# plot(nmds, type='n', main='NMDS functional profile')
 # with(env, points(nmds, display = "species", col = 'black', pch = '.'))
-# with(env, points(nmds, display = "sites", col = colvec[ocean], pch = 15, bg = colvec[ocean]))
-# with(env, legend("topleft", legend = levels(ocean), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
+# with(env, points(nmds, display = "sites", col = colvec[project], pch = 15, bg = colvec[project]))
+# with(env, legend("topleft", legend = levels(project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
+# # 
+# stressplot(nmds, main='stress plot')
 
-# stressplot(nmds)
+# d = vegdist(mat, method="bray")
+# d2 = vegdist(mat2, method="bray")
+# nmds <- metaMDS(mat)
+# nmds2 <- metaMDS(mat2)
+# pr <- procrustes(d,d2)
+# plot(pr)
+
 
 # ord<-capscale(mat~1,distance="bray")
 # with(env, levels(project))display = "sites"
@@ -199,7 +231,14 @@ plot + xlab("PFAM") + ylab("Anzahl") + scale_y_continuous(labels = comma) + coor
 # with(env, legend("topleft", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
 # 
 # 
+# anosim(d, env$project)
 # anosim(d, env$ocean)
+# anosim(d, env$platform)
+# anosim(d, env$site)
+# anosim(d, env$region)
+# anosim(d, env$worldmap)
+# anosim(d, env$depth)
+# anosim(d, env$collection_year)
 
 # plot(ord)
 # # biplot(ord, type="n")

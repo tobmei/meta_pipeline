@@ -1,6 +1,6 @@
 
 
-def combine(profiles_dir)
+def combine(profiles_dir, out)
 
   profile = Hash.new
   classification_summary = Hash.new
@@ -25,11 +25,14 @@ def combine(profiles_dir)
   
   profile = profile.sort_by{|k, v| v}.reverse
   
-  File.open("#{profiles_dir}/uproc.txt", 'w') { |f|
+  #TODO load pfamaclans into memory (hash) instead of grepping
+  File.open("#{profiles_dir}/#{out}.txt", 'w') { |f|
     profile.each do |fam,freq|
-      pfam_desc = `grep #{fam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
-      pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[0..30]}..." : pfam_desc
-      f.puts "#{pfam_desc},#{freq}"
+#       pfam_desc = `grep #{fam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
+#       pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[0..30]}..." : pfam_desc
+#       f.puts "#{pfam_desc.gsub(',',' ')}(#{fam}),#{freq}"
+      f.puts "#{fam},#{freq}"
+    end
   }
   
   return classification_summary
