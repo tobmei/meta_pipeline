@@ -3,10 +3,11 @@ tax_arr = []
 vf_hash = Hash.new
 
 ARGV.each do |vent|
+  next if !File.exists?("#{vent}/profiles/functional/diamond/diamond_less_Taxy/diamond_less_complete_diamond.csv")
   ve = File.basename(vent)
-  next if ve == "test_data"
+  next if vent =~ /cayman/ || vent =~ /xie/
   row_arr = [ve]
-  File.open("#{vent}/profiles/Taxy/taxonomic_profile.csv").each_line do |line|
+  File.open("#{vent}/profiles/functional/diamond/diamond_less_Taxy/diamond_less_complete_diamond.csv").each_line do |line|
     l = line.split("\t")
     next if l[0] == 'frequency' || l[0] =="#frequency" 
     freq = l[0].chomp
