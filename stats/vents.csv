@@ -1,34 +1,34 @@
-project	pcoaGroups	test	ocean
-Anantharaman	a	a	Pazifik, SW
-Anantharaman	a	a	Pazifik, SW
-Anantharaman	a	b	Pazifik, SW
-Anantharaman	a	a	Pazifik, SW
-Anantharaman	a	b	Pazifik, SW
-Anantharaman	a	c	Pazifik, SW
-Anantharaman	a	c	Pazifik, SW
-Anantharaman	a	a	Pazifik, SW
-Anantharaman	a	a	Pazifik, SW
-Anantharaman	a	a	Pazifik, SW
-Anantharaman	a	c	Pazifik, SW
-Anderson	b	b	Pazifik, NO
-Anderson	b	b	Pazifik, NO
-Axial_seamount	a	b	Pazifik, NO
-Axial_seamount	a	a	Pazifik, NO
-Axial_seamount	a	c	Pazifik, NO
-Axial_seamount	a	c	Pazifik, NO
-Axial_seamount	a	c	Pazifik, NO
-Axial_seamount	a	c	Pazifik, NO
-Axial_seamount	a	a	Pazifik, NO
-Cayman_rise	a	a	Atlantik, W
-Cayman_rise	a	a	Atlantik, W
-Cayman_rise	a	b	Atlantik, W
-Cayman_rise	a	b	Atlantik, W
-Lanzen	b	b	Arktik
-Lesniewski	b	b	Pazifik, O
-Lesniewski	b	c	Pazifik, O
-Nakai	b	b	Pazifik, W
-Perner	b	a	Atlantik, S
-Stokke	b	a	Arktik
-Tang	b	c	Pazifik, W
-Tang	b	a	Pazifik, W
-Xie	b	c	Pazifik, NO
+#name_on_disk	project	ocean	platform	site	region	worldmap	depth	collection_year
+anantharaman_abe_1_1	Anantharaman	Pazifik, SW	illumina	Abe	Lau Basin	JKLMN	2001-3000	2009
+anantharaman_abe_2_2	Anantharaman	Pazifik, SW	illumina	Abe	Lau Basin	JKLMN	1001-2000	2009
+anantharaman_abe_background_3	Anantharaman	Pazifik, SW	illumina	Abe	Lau Basin	JKLMN	2001-3000	2009
+anantharaman_kilo_moana_km1_4	Anantharaman	Pazifik, SW	illumina	Kilo Moana	Lau Basin	JKLMN	2001-3000	2009
+anantharaman_kilo_moana_km4_1_5	Anantharaman	Pazifik, SW	illumina	Kilo Moana	Lau Basin	JKLMN	2001-3000	2009
+anantharaman_kilo_moana_km4_2_6	Anantharaman	Pazifik, SW	illumina	Kilo Moana	Lau Basin	JKLMN	2001-3000	2009
+anantharaman_mariner_7	Anantharaman	Pazifik, SW	illumina	Mariner	Lau Basin	JKLMN	1001-2000	2009
+anantharaman_mariner_background_8	Anantharaman	Pazifik, SW	illumina	Mariner	Lau Basin	JKLMN	1001-2000	2009
+anantharaman_tahi_moana_9	Anantharaman	Pazifik, SW	illumina	Tahi Moana	Lau Basin	JKLMN	2001-3000	2009
+anantharaman_tahi_moana_background_10	Anantharaman	Pazifik, SW	illumina	Tahi Moana	Lau Basin	JKLMN	101-1000	2009
+anantharaman_tui_malila_11	Anantharaman	Pazifik, SW	illumina	Tui Malila	Lau Basin	JKLMN	1001-2000	2009
+anderson_hulk_cellular_12	Anderson	Pazifik, NO	454	Hulk	Juan de Fuca	ABCDEFGUV	2001-3000	2009
+anderson_hulk_virome_13	Anderson	Pazifik, NO	454	Hulk	Juan de Fuca	ABCDEFGUV	2001-3000	2009
+axial_seamount_unpublished_anemone_14	Axial_seamount	Pazifik, NO	illumina	Anemone	Juan de Fuca	ABCDEFGUV	1001-2000	2013
+axial_seamount_unpublished_dependable_15	Axial_seamount	Pazifik, NO	illumina	Dependable	Juan de Fuca	ABCDEFGUV	1001-2000	2013
+axial_seamount_unpublished_elguapo_16	Axial_seamount	Pazifik, NO	illumina	El Guapo	Juan de Fuca	ABCDEFGUV	1001-2000	2013
+axial_seamount_unpublished_marker113_18	Axial_seamount	Pazifik, NO	illumina	Marker113	Juan de Fuca	ABCDEFGUV	1001-2000	2013
+axial_seamount_unpublished_marker33_17	Axial_seamount	Pazifik, NO	illumina	Marker33	Juan de Fuca	ABCDEFGUV	1001-2000	2013
+axial_seamount_unpublished_marshmallow_19	Axial_seamount	Pazifik, NO	illumina	Marshmallow	Juan de Fuca	ABCDEFGUV	1001-2000	2011
+axial_seamount_unpublished_n3_20	Axial_seamount	Pazifik, NO	illumina	N3	Juan de Fuca	ABCDEFGUV	1001-2000	2011
+cayman_rise_unpublished_beebe_21	Cayman_rise	Atlantik, W	illumina	Beebe	Cayman Rise	IO	4001-5000	2012
+cayman_rise_unpublished_beebe_background_22	Cayman_rise	Atlantik, W	illumina	Beebe	Cayman Rise	IO	4001-5000	2012
+cayman_rise_unpublished_von_damm_2041_23	Cayman_rise	Atlantik, W	illumina	Von Damm	Cayman Rise	IO	2001-3000	2012
+cayman_rise_unpublished_von_damm_2238_24	Cayman_rise	Atlantik, W	illumina	Von Damm	Cayman Rise	IO	2001-3000	2012
+lanzen_trollveggen_25	Lanzen	Arktik	454	Trollveggen	Mohns Ridge	PH	101-1000	2008
+lesniewski_guaymas_basin_GD1_26	Lesniewski	Pazifik, O	454	GD1	Guaymas Basin	QR	1001-2000	2004
+lesniewski_guaymas_basin_GD2_27	Lesniewski	Pazifik, O	454	GD2	Guaymas Basin	QR	1001-2000	2004
+nakai_fryer_28	Nakai	Pazifik, W	454	Fryer	Mariana Trough	WT	2001-3000	2003
+perner_sisters_peak_29	Perner	Atlantik, S	454	Sisters Peak	Mid-Atlantic Rdidge	S	2001-3000	2009
+stokke_lokis_castle_30	Stokke	Arktik	454	Lokis Castle	Mid-Arctic Ridge	PH	2001-3000	2009
+tang_kueishantao_G1_31	Tang	Pazifik, W	454	Kueishantao	Guishan Island	WT	0-100	2010
+tang_kueishantao_G2_32	Tang	Pazifik, W	454	Kueishantao	Guishan Island	WT	0-100	2010
+xie_4143-1_33	Xie	Pazifik, NO	454	4143-1	Juan de Fuca	ABCDEFGUV	2001-3000	2003
