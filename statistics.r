@@ -14,11 +14,14 @@ mat <- read.csv(args[1], header=TRUE, sep=",")
 env <- read.csv(args[2], header=TRUE, sep="\t")
 # 
 # geo_mat <- read.csv(args[2], header=FALSE, sep=",")
-# list <- read.csv(args[1], header=TRUE, sep=",")
+# list <- read.csv(args[1], header=TRUE, sep="\t")
 # list2 <- read.csv(args[2], header=TRUE, sep=",")
 # list3 <- read.csv(args[3], header=FALSE, sep=",")
 # 
-# pdf('neu/bla.pdf')
+# 
+
+# head(list)
+
 # 
 # corr_eqn <- function(x,y, digits = 2) {
 #   corr_coef <- round(cor(x, y), digits = digits)
@@ -185,21 +188,21 @@ env <- read.csv(args[2], header=TRUE, sep="\t")
 # corrplot(a, p.mat = p.adj, method='circle', type='lower',tl.srt=45, tl.col='black', tl.cex=0.6)
 
 #PCOA
-d = vegdist(mat, method="bray")
-write.csv(as.matrix(d),file="ddistmat.csv")
-pcoa<-cmdscale(d, eig=TRUE, add=TRUE)
-eig <- eigenvals(pcoa)
-eigs <- eig / sum(eig)
-v1 <- round(eigs[1]*100,digits=2)
-v2 <- round(eigs[2]*100,digits=2)
-x <- pcoa$points[,1]
-y <- pcoa$points[,2]
-with(env, levels(project))
-colvec <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99')
-with(env, colvec[project])
-plot(x,y, type='n', xlab=paste("MDS1 (",v1,"%)"), ylab=paste("MDS2 (",v2,"%)"), main='PCoA functional profile')
-with(env, points(x,y, col = colvec[env$project], pch = 15, bg = colvec[env$project]))
-with(env, legend("topright", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
+# d = vegdist(mat, method="bray")
+# write.csv(as.matrix(d),file="ddistmat.csv")
+# pcoa<-cmdscale(d, eig=TRUE, add=TRUE)
+# eig <- eigenvals(pcoa)
+# eigs <- eig / sum(eig)
+# v1 <- round(eigs[1]*100,digits=2)
+# v2 <- round(eigs[2]*100,digits=2)
+# x <- pcoa$points[,1]
+# y <- pcoa$points[,2]
+# with(env, levels(project))
+# colvec <- c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99')
+# with(env, colvec[project])
+# plot(x,y, type='n', xlab=paste("MDS1 (",v1,"%)"), ylab=paste("MDS2 (",v2,"%)"), main='PCoA functional profile')
+# with(env, points(x,y, col = colvec[env$project], pch = 15, bg = colvec[env$project]))
+# with(env, legend("topright", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
 # # 
 # # 
 # nmds <- metaMDS(mat)
@@ -231,14 +234,26 @@ with(env, legend("topright", legend = levels(env$project), bty = "n", col = colv
 # with(env, legend("topleft", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
 # 
 # 
-# anosim(d, env$project)
-# anosim(d, env$ocean)
-# anosim(d, env$platform)
-# anosim(d, env$site)
-# anosim(d, env$region)
-# anosim(d, env$worldmap)
-# anosim(d, env$depth)
-# anosim(d, env$collection_year)
+# plot(anosim(d, env$project), main='project', las=2)
+# plot(anosim(d, env$classified), main='classified sequences (*10^3)', las=2)
+# plot(anosim(d, env$seq_length), main='seq_length (*10^3)', las=2)
+# plot(anosim(d, env$avg_length), main='avg_length', las=2)
+# plot(anosim(d, env$ocean), main='ocean', las=2)
+# plot(anosim(d, env$ocean_detail), main='ocean_detail', las=2)
+# # plot(anosim(d, env$platform), main='platform', las=2)
+# plot(anosim(d, env$site), main='site', las=2)
+# plot(anosim(d, env$region), main='region', las=2)
+# plot(anosim(d, env$depth), main='depth', las=2)
+# plot(anosim(d, env$collection_year), main='collection year', las=2)
+# plot(anosim(d, env$temp), main='temp', las=2)
+# plot(anosim(d, env$pH), main='pH', las=2)
+# plot(anosim(d, env$host_rock), main='host rock', las=2)
+# plot(anosim(d, env$spreading_rate), main='spreading rate', las=2)
+# plot(anosim(d, env$tectonic_setting), main='tectonic setting', las=2)
+# plot(anosim(d, env$worldmap), main='worldmap', las=2)
+# plot(anosim(d, env[,17]), main='NH4+')
+# plot(anosim(d, env[,25]), main='CH4')
+
 
 # plot(ord)
 # # biplot(ord, type="n")
