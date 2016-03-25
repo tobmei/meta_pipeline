@@ -130,7 +130,7 @@ module Preprocess
       execute("mv #{prepro_reads}/#{run_nr}_trimmed.fastq #{prepro_reads}/#{run_nr}.fastq")
       execute("mv #{prepro_reads}/#{run_nr2}_trimmed.fastq #{prepro_reads}/#{run_nr2}.fastq") if pe
       puts "processing #{run}: prinseq"
-      execute("perl /work/gi/software/bin/prinseq-lite.pl -fastq #{prepro_reads}/#{run_nr}.fastq -fastq2 #{prepro_reads}/#{run_nr2}.fastq -trim_qual_left 28 -trim_qual_right 28 -trim_tail_left 8 -trim_tail_right 8 -trim_ns_left 8 -trim_ns_right 8 -lc_method entropy -lc_threshold 70 -min_len 50 -out_format 3 -out_bad null")
+      execute("perl /work/gi/software/bin/prinseq-lite.pl -fastq #{prepro_reads}/#{run_nr}.fastq -fastq2 #{prepro_reads}/#{run_nr2}.fastq -trim_tail_left 8 -trim_tail_right 8 -trim_ns_left 8 -trim_ns_right 8 -lc_method entropy -lc_threshold 70 -min_len 50 -out_format 3 -out_bad null")
       execute("rm -f #{prepro_reads}/*singletons*.fastq")
       execute("rm -f #{prepro_reads}/#{run_nr}.fastq")
       execute("rm -f #{prepro_reads}/#{run_nr2}.fastq")

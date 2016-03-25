@@ -163,12 +163,26 @@ if options[:classification]
     `octave /work/gi/software/taxy-pro/taxy_script.m #{profiles_dir}/uproc.txt #{length}`
   end
   
-  
-  #downstream analysis
-  
-  
-  
-  
 end
+
+#downstream analysis
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

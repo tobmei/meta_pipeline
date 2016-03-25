@@ -3,11 +3,11 @@ tax_arr = []
 vf_hash = Hash.new
 
 ARGV.each do |vent|
-  next if !File.exists?("#{vent}/profiles/functional/diamond/diamond_less_Taxy/diamond_less_complete_diamond.csv")
+  next if !File.exists?("#{vent}/profiles/Taxy/complete.csv")
   ve = File.basename(vent)
-  next if vent =~ /cayman/ || vent =~ /xie/
+#   next if vent =~ /cayman/ || vent =~ /xie/
   row_arr = [ve]
-  File.open("#{vent}/profiles/functional/diamond/diamond_less_Taxy/diamond_less_complete_diamond.csv").each_line do |line|
+  File.open("#{vent}/profiles/Taxy/complete.csv").each_line do |line|
     l = line.split("\t")
     next if l[0] == 'frequency' || l[0] =="#frequency" 
     freq = l[0].chomp
@@ -18,6 +18,7 @@ ARGV.each do |vent|
 #     family = l[5].chomp
 #     genus = l[6].chomp
     species = l[7].chomp
+    species = 'Unknown' if species =~ /Unknown/
     
 #     next if superkingdom != 'Bacteria'
 #     taxa_arr.push(phylum)
@@ -33,13 +34,13 @@ end
 # print ","
 
 tax_arr.each do |tax| 
-  print tax == tax_arr[-1] ? "#{tax}" : "#{tax},"
+  print tax == tax_arr[-1] ? "#{tax}" : "#{tax}\t"
 end
 puts"\n"
 vf_hash.each do |vent,hash|
-  print "#{vent},"
+  print "#{vent}\t"
   tax_arr.each do |tax|
-    print tax == tax_arr[-1] ? "#{hash[tax]}" : "#{hash[tax]},"
+    print tax == tax_arr[-1] ? "#{hash[tax]}" : "#{hash[tax]}\t"
   end
   puts "\n"
 end
