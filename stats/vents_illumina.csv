@@ -1,0 +1,23 @@
+vent	classified (*10^7)	seq_length (*10^8)	project	ocean	ocean_detail	platform	site	region	worldmap	depth	collection_year	temp	pH	spreading_rate	host_rock	O2 (μmolﾠ/kg)	H2	NH4+ (μmol/kg)	S2- (mg/L)	SiO2 (mmol/kg)	PO43- (μmol/L)	NO2- (μmol/L)	Ca2+ (mmol/kg)	Cl- (mmol/kg)  	Na+ (mmol/kg)	CH4	K+ (mmol/kg)	Fe2+ (mmol/kg)	CO2 (mmol/kg)	TA (μmol/L)	DOC (μmol/L)	tectonic_setting
+anantharaman_abe_1_1	20-30	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Abe	Lau Basin	JKLMN	2001-3000	2009	301-400	4-6	60-80		0	0.2 mmol/kg	201-400				0			430	0-1	25	0.72	8			back-arc 
+anantharaman_abe_2_2	40-50	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Abe	Lau Basin	JKLMN	1001-2000	2009	301-400	4-6	60-80																		
+anantharaman_abe_background_3	10-20	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Abe	Lau Basin	JKLMN	2001-3000	2009	301-400		60-80																		
+anantharaman_kilo_moana_km1_4	30-40	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Kilo Moana	Lau Basin	JKLMN	2001-3000	2009	301-400		80-100	basalt																	back-arc 
+anantharaman_kilo_moana_km4_1_5	10-20	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Kilo Moana	Lau Basin	JKLMN	2001-3000	2009	301-400		80-100	basalt																	
+anantharaman_kilo_moana_km4_2_6	30-40	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Kilo Moana	Lau Basin	JKLMN	2001-3000	2009	301-400		80-100	basalt																	
+anantharaman_mariner_7	60-70	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Mariner	Lau Basin	JKLMN	1001-2000	2009	301-400	2-4	40-60	basalt	0	0.2 mmol/kg	201-400				0			458	0-1	36	11.3	32			back-arc 
+anantharaman_mariner_background_8	30-40	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Mariner	Lau Basin	JKLMN	1001-2000	2009	301-400		40-60																		
+anantharaman_tahi_moana_9	20-30	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Tahi Moana	Lau Basin	JKLMN	2001-3000	2009			60-80																		back-arc 
+anantharaman_tahi_moana_background_10	50-60	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Tahi Moana	Lau Basin	JKLMN	101-1000	2009			60-80																		
+anantharaman_tui_malila_11	40-50	10-20	Anantharaman	Pazifik	Pazifik, SW	Illumina HiSeq 2000	Tui Malila	Lau Basin	JKLMN	1001-2000	2009	301-400		40-60	andesitic																	back-arc 
+axial_seamount_unpublished_anemone_14	30-40	10-20	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	Anemone	Juan de Fuca	ABCDEFGUV	1001-2000	2013	201-300		60-80																		back-arc 
+axial_seamount_unpublished_dependable_15	0-10	0-10	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	Dependable	Juan de Fuca	ABCDEFGUV	1001-2000	2013	301-400																				
+axial_seamount_unpublished_elguapo_16	60-70	10-20	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	El Guapo	Juan de Fuca	ABCDEFGUV	1001-2000	2013	301-400		40-60	basalt																	mid-ocean ridge
+axial_seamount_unpublished_marker113_18	10-20	0-10	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	Marker113	Juan de Fuca	ABCDEFGUV	1001-2000	2013	0-100		40-60	basalt																	mid-ocean ridge
+axial_seamount_unpublished_marker33_17	0-10	0-10	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	Marker33	Juan de Fuca	ABCDEFGUV	1001-2000	2013	0-100		40-60	basalt																	mid-ocean ridge
+axial_seamount_unpublished_marshmallow_19	0-10	0-10	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	Marshmallow	Juan de Fuca	ABCDEFGUV	1001-2000	2011	301-400		40-60	basalt																	mid-ocean ridge
+axial_seamount_unpublished_n3_20	0-10	0-10	Axial_seamount	Pazifik	Pazifik, NO	Illumina HiSeq 1000	N3	Juan de Fuca	ABCDEFGUV	1001-2000	2011	301-400																				
+cayman_rise_unpublished_beebe_21	70-80	30-40	Cayman_rise	Atlantik	Atlantik, W	Illumina HiSeq 2500	Beebe	Cayman Rise	IO	4001-5000	2012	301-400		0-20	basalt																	mid-ocean ridge
+cayman_rise_unpublished_beebe_background_22	70-80	30-40	Cayman_rise	Atlantik	Atlantik, W	Illumina HiSeq 2500	Beebe	Cayman Rise	IO	4001-5000	2012	301-400		0-20	basalt																	
+cayman_rise_unpublished_von_damm_2041_23	80-90	30-40	Cayman_rise	Atlantik	Atlantik, W	Illumina HiSeq 2500	Von Damm	Cayman Rise	IO	2001-3000	2012	201-300		0-20	basalt																	mid-ocean ridge
+cayman_rise_unpublished_von_damm_2238_24	50-60	30-40	Cayman_rise	Atlantik	Atlantik, W	Illumina HiSeq 2500	Von Damm	Cayman Rise	IO	2001-3000	2012	201-300		0-20	basalt																	

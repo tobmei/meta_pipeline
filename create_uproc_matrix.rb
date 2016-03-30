@@ -15,9 +15,9 @@ end
 ARGV.each do |vent|
   ve = File.basename(vent)
 #   next if meta_hash[ve] != 'illumina'
-  profiles_dir = "#{vent}/profiles/functional/diamond"
-  next if !File.exists?("#{profiles_dir}/diamond_less.txt")  
-  uproc_file = "#{profiles_dir}/diamond_less.txt"
+  profiles_dir = "#{vent}/profiles/functional/uproc"
+#   next if !File.exists?("#{profiles_dir}/diamond_less.txt")  
+  uproc_file = "#{profiles_dir}/uproc.txt"
   File.open(uproc_file).each do |line|
     l = line.split(',')
     next if l[0] == 'pfam'
@@ -28,46 +28,19 @@ ARGV.each do |vent|
     vcounts_hash[ve][pfam_id] = counts.chomp
   end
 end
-# print "taxon"
-arr2 = []
-vcounts_hash.each do |k,v|
-#   print ",#{k}"
-  arr1 = []
-  pfam_arr.each do |t|
-    arr1.push(v[t])
-  end
-  arr2.push(arr1)
-end
-# arr2 = arr2.transpose
-# puts "\n"
 
-v_arr = []
-vcounts_hash.each do |vent,bla|
-  v_arr.push(vent)
-end
 
 pfam_arr.each do |pfam|
-  if pfam == pfam_arr[-1]
-    print "#{pfam}"
-  else
-    print "#{pfam},"
+  print pfam == pfam_arr[-1] ? "#{pfam}\n" : "#{pfam},"
+end
+vcounts_hash.each do |vent,hash|
+  print "#{vent},"
+  pfam_arr.each do |pfam|
+    print pfam == pfam_arr[-1] ? "#{hash[pfam]}\n" : "#{hash[pfam]},"
   end
 end
-puts "\n"
-i = 0
-arr2.each do |rows|
-  print "#{v_arr[i]},"
-  i += 1
-  (0..rows.size-1).each do |val|
-    if val == rows.size-1
-      print "#{rows[val]}"
-    else
-      print "#{rows[val]},"
-    end
-  end
-  puts "\n" if rows != arr2[-1]
-end
-puts"\n"
+  
+  
 
 
 

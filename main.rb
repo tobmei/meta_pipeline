@@ -2,6 +2,8 @@ require_relative 'fastqc_analysis'
 require_relative 'preprocess'
 require_relative 'modules/helper'
 require_relative 'modules/preprocess_summary'
+require_relative 'modules/downstream_helper'
+require_relative 'modules/stamp'
 require_relative 'combine_functional_profiles'
 require 'optparse'
 
@@ -17,6 +19,9 @@ parser = OptionParser.new do |opts|
   end
   opts.on("-c", "--[no-]classification", "Perform protein sequence classification") do |c|
     options[:classification] = c
+  end
+  opts.on("-o", "--statout", "Output folder for accumulated profiles, plots, etc.") do |o|
+    options[:output] = o
   end
   opts.on('-h', '--help', 'Displays Help') do
     puts opts
@@ -117,56 +122,104 @@ if options[:classification]
     `mkdir #{vent}/profiles/taxonomic`
     prepro_reads = "#{vent}/preprocessed_reads"
     profiles_dir = "#{vent}/profiles/functional/uproc"
+    #profiles_dir_diamond = "#{vent}/profiles/functional/diamond"
     taxy_dir = "#{vent}/profiles/taxonomic/Taxy"
-   # next if !File.exists?("#{profiles_dir}/diamond.txt") 
     `mkdir #{profiles_dir}` if !Dir.exists?(profiles_dir)
     `mkdir #{taxy_dir}`if !Dir.exists?(taxy_dir)
 
     #run uproc
-    Dir.glob("#{prepro_reads}/*fastq.gz") do |run|  
-      run_nr = File.basename(run.sub('.fastq.gz',''))
+    Dir.glob("#{prepro_reads}/*fastq.gz") do |run| 
       puts "processing #{run_nr}: uproc"
       length = summary_file[File.basename(vent)].to_i <= 200 ? '-s' : '-l'
-      puts length
-#     `uproc-dna -f -P 2 -c #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc_lessrestricitve.txt`
-#     `uproc-dna -p #{length} #{Paths.pfam27_uproc} #{Paths.model_uproc} #{run} > #{profiles_dir}/#{run_nr}_uproc_all.txt`
-      `uproc-dna -fc #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc.txt` 
+      puts "Uproc length option: #{length}"
+      Profiling.func_prof_uproc(run,profiles_dir)
+      #Profiling.func_prof_diamond(run,profiles_dir_diamond)
     end
     summary = combine(profiles_dir,'uproc')
     classification_summary[vent] = summary  
+    #summary_diamond = combine(profiles_dir_diamond,'diamond')
+    #classification_summary[vent] = summary_diamond  
   end
   
   #write classification summary to file
-  if !File.exists?("stats/classification_summary.csv")
-    File.open("stats/classification_summary.csv", 'w') { |f|
-      f.puts "vent,classified,unclassified,total"
-    }
-  end
-  
-  File.open("stats/classification_summary.csv", 'a') { |f|
-    classification_summary.each do |vent,s|
-      f.print "#{File.basename(vent)},"
-      f.print "#{s[:classified]},"
-      f.print "#{s[:unclassified]},"
-      f.puts "#{s[:total]}"
-    end
-  }
-  #end
+  Profiling.write_classification_summary(classification_summary)
 
   #run taxy-pro
   ARGV.each do |vent|
     profiles_dir = "#{vent}/profiles/functional/uproc"
-    next if !File.exists?("#{profiles_dir}/uproc.txt")
+    if !File.exists?("#{profiles_dir}/uproc.txt")
+      puts "Functional profile #{profiles_dir}/uproc.txt not found. Skipping data #{vent}"
+      next
+    end
     puts "processing taxy-pro for #{vent}"
     length = summary_file[File.basename(vent)].to_i <= 200 ? 'S' : 'L'
-    puts length
-    `octave /work/gi/software/taxy-pro/taxy_script.m #{profiles_dir}/uproc.txt #{length}`
+    puts "Taxy-pro length option: #{length}"
+    Profiling.tax_prof_taxypro(profiles_dir,length)
   end
   
 end
 
-#downstream analysis
 
+#########################
+###downstream analysis###
+#########################
+
+
+#bar plots for taxonomy and function
+ARGV.each do |vent|
+  v = File.basename(vent)
+  tax_file = "#{vent}/profiles/taxonomic/Taxy/complete.csv"
+  func_file = "#{vent}/profiles/functional/uproc/uproc.txt"
+  if !File.exists?(tax_file) || !File.exists?(func_file)
+    puts "Profile file not found. Skipping this one."
+    next
+  end
+  `Rscript R/taxonomy.r #{tax_file} #{func_file} #{vent}/profiles/taxonomic/Taxy/#{v} #{vent}/profiles/functional/uproc/#{v} `
+end
+
+out = options[:output] == nil ? '.' : options[:output] 
+`mkdir #{options[:output]}/plots` if !Dir.exists?("#{out}/plots")
+`mkdir #{options[:output]}/profiles` if !Dir.exists?("#{out}/profiles")
+`mkdir #{options[:output]}/stamp` if !Dir.exists?("#{out}/stamp")
+vents_path = File.dirname(ARGV[0])
+                                                     
+#accumulate profiles of all metagenomes
+Downstream_helper.generate_functional_profile_matrix(Dir["#{vents_path}/*"],"#{out}/profiles")
+Downstream_helper.generate_taxonomic_profile_matrix(Dir["#{vents_path}/*"],"#{out}/profiles")
+cats = Downstream_helper.get_anosim_categories("#{out}/vents_meta.tsv")
+
+#plots, anosim, etc for all datasets
+funcprof_file = "#{out}/profiles/functional_profile.csv"
+taxprof_file = "#{out}/profiles/taxonomic_profile_species_level.csv"
+funcprof_file_stamp = "#{out}/profiles/functional_profile_stamp_compatible.csv"
+taxprof_file_stamp = "#{out}/profiles/taxonomic_profile_species_level_stamp.csv"
+[funcprof_file,taxprof_file,funcprof_file_stamp,taxprof_file_stamp].each do |file|
+  if !File.exists?(file)
+    STDERR.puts "File #{file} not found. There was propably an error while generating it. This is not good."
+    exit 1
+  end
+end
+
+`Rscript R/ordination.r #{funcprof_file} #{out}/vents_meta.tsv #{out}/plots/functional_profile_`
+`Rscript R/ordination.r #{taxprof_file} #{out}/vents_meta.tsv #{out}/plots/taxonomic_profile_`
+
+anosim_arr1 = []
+anosim_arr2 = []
+cats.each do |cat|
+  result1 = `Rscript R/anosim.r #{taxprof_file} /scratch/gi/coop/perner/metameta/stats/vents_meta.tsv #{cat}`
+  result2 = `Rscript R/anosim.r #{funcprof_file} /scratch/gi/coop/perner/metameta/stats/vents_meta.tsv #{cat}`
+  anosim_arr1.push(result1)
+  anosim_arr2.push(result2)
+end
+Downstream_helper.write_anosim_results(anosim_arr1,"#{out}/taxonomic_profile_")
+Downstream_helper.write_anosim_results(anosim_arr2,"#{out}/functional_profile_")
+
+
+#stamp
+cats.each do |cat|
+  Stamp.run(funcprof_file_stamp,"#{out}/vents_meta.tsv",cat,"#{out}/stamp/stamp_funcprof_#{cat}.pdf")
+  Stamp.run(taxprof_file_stamp,"#{out}/vents_meta.tsv",cat,"#{out}/stamp/stamp_taxprof_#{cat}.pdf")
+end
 
 
 

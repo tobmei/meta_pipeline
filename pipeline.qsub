@@ -6,8 +6,8 @@
 #$ -S /bin/bash
 #$ -o /scratch/gi/coop/perner/metameta
 #$ -j y
-#$ -t 41-42
+#$ -t 15-15
 
 
-ruby /work/gi/coop/perner/metameta/meta_pipeline/main.rb -p -c -i /work/gi/coop/perner/metameta/meta_pipeline/seq_meta.tsv /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
+ruby /work/gi/coop/perner/metameta/meta_pipeline/main.rb -p --no-classification -i /work/gi/coop/perner/metameta/meta_pipeline/seq_meta.tsv /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
 

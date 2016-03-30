@@ -1,0 +1,13 @@
+#! /bin/bash
+#$ -clear
+#$ -q hpc.q
+#$ -cwd
+#$ -V
+#$ -S /bin/bash
+#$ -o /scratch/gi/coop/perner/metameta
+#$ -j y
+# -t 35-35
+
+
+ruby /work/gi/coop/perner/metameta/meta_pipeline/download_sra.rb  /work/gi/coop/perner/metameta/meta_pipeline/stats/accessions.txt /scratch/gi/coop/perner/metameta/vents
+

@@ -26,14 +26,15 @@ def combine(profiles_dir, out)
   profile = profile.sort_by{|k, v| v}.reverse
   
   #TODO load pfamaclans into memory (hash) instead of grepping
-  File.open("#{profiles_dir}/#{out}.txt", 'w') { |f|
+  CSV.open("#{profiles_dir}/#{out}.txt", 'w') do |csv|
+    csv << ['pfam','count']
     profile.each do |fam,freq|
 #       pfam_desc = `grep #{fam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
 #       pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[0..30]}..." : pfam_desc
 #       f.puts "#{pfam_desc.gsub(',',' ')}(#{fam}),#{freq}"
-      f.puts "#{fam},#{freq}"
+      csv << [fam,freq]
     end
-  }
+  end
   
   return classification_summary
   
