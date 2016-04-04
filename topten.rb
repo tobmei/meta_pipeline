@@ -63,7 +63,6 @@ phash.each do |p,h|
   ahash[p][:max] = [max,max_vent]
 end
 
-'["PF01051", {:avg_prop=>0.017128828911598414, :min=>[3.0058155531108254e-06, "cayman_rise_unpublished_beebe_background_22"], :max=>[0.5055659649509534, "perner_sisters_peak_29"]}]'
 topten_pfam = []
 ahash.sort_by{|p,h| -h[:avg_prop]}.each_with_index do |k,idx|
   if idx < 10
@@ -77,14 +76,22 @@ end
 # pfam2    prop
 # pfam2    prop
 #...
-puts 'pfam,freq'
-topten_pfam.each do |pfam|
-  phash[pfam].each do |v,p|
-    puts "#{pfam},#{p}"
+CSV.open('boxplot_temp.csv', 'w') do |csv|
+  csv << ['pfam','freq']
+  topten_pfam.each do |pfam|
+    phash[pfam].each do |v,p|
+     csv << [pfam,p]
+    end
   end
 end
-      
-      
+
+#write min max list
+CSV.open('minmax.csv', 'w') do |csv|
+  csv << ['pfam','min','min_vent','max','max_vent']
+  topten_pfam.each do |pfam|
+    csv << [pfam,ahash[pfam][min][0],ahash[pfam][min][1],ahash[pfam][max][0],ahash[pfam][max][1]]
+  end
+end
       
       
       
