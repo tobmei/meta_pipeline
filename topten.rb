@@ -10,8 +10,8 @@ method = 'uproc'
 'ahash = {pfam => {avg_prop=>prop, min=>[prop,vent], max=>[prop,vent]}, pfam => {...}, ...}'
 
 ARGV.each do |vent|
-  profil_file = "#{vent}/profiles/functional/#{method}/#{method}.txt"
-  if !File.exists(profile_file)
+  profile_file = "#{vent}/profiles/functional/#{method}/#{method}.txt"
+  if !File.exists?(profile_file)
     STDERR.puts "Profile file #{pofie_file} not found"
     exit 1
   end
@@ -22,18 +22,16 @@ ARGV.each do |vent|
     pfam = line[0]
     count = line[1].chomp.to_i
     vhash[vent][pfam] = count
-    count_sum += 0
+    count_sum += count
   end
-  vhash.each do |v,h|
-    h.each do |p,c|
-    vhash[v][p] = (count / count_sum).to_f #relative proportion
-  end
+  vhash[vent].each do |p,c|
+    vhash[vent][p] = (vhash[vent][p] / count_sum).to_f #relative proportion
   end
 end
 
 vhash.each do |v,h|
   h.each do |p,rp|
-    phash[p] = Hash.new if phash.has_key?(p)
+    phash[p] = Hash.new if !phash.has_key?(p)
     phash[p][v] = rp
   end
 end
