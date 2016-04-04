@@ -10,22 +10,25 @@ method = 'uproc'
 'ahash = {pfam => {avg_prop=>prop, min=>[prop,vent], max=>[prop,vent]}, pfam => {...}, ...}'
 
 ARGV.each do |vent|
+  ve = File.basename(vent)
+  next if ve =~ /TARA/
   profile_file = "#{vent}/profiles/functional/#{method}/#{method}.txt"
   if !File.exists?(profile_file)
-    STDERR.puts "Profile file #{pofie_file} not found"
-    exit 1
+    STDERR.puts "Profile file #{profile_file} not found"
+    #exit 1
+    next
   end
-  vhash[vent] = Hash.new
-  count_sum = 0
+  vhash[ve] = Hash.new
+  count_sum = 0.0
   CSV.open(profile_file, 'r').each do |line|
     next if line[0] == 'pfam'
     pfam = line[0]
     count = line[1].chomp.to_i
-    vhash[vent][pfam] = count
+    vhash[ve][pfam] = count
     count_sum += count
   end
-  vhash[vent].each do |p,c|
-    vhash[vent][p] = (vhash[vent][p] / count_sum).to_f #relative proportion
+  vhash[ve].each do |p,c|
+    vhash[ve][p] = (vhash[ve][p] / count_sum).to_f #relative proportion
   end
 end
 
@@ -44,26 +47,29 @@ phash.each do |p,h|
   prop_sum = 0.0
   avg = 0.0
   h.each do |v,rp|
-    if min < rp
+    if rp < min
       min = rp
       min_vent = v
     end
-    if max > rp
+    if rp > max
       max = rp
       max_vent = v
     end
     prop_sum += rp
   end
-  ahash[p] = Hash.new if ahash.has_key?(p)
+  ahash[p] = Hash.new if !ahash.has_key?(p)
   ahash[p][:avg_prop] = (prop_sum / h.size).to_f
   ahash[p][:min] = [min,min_vent]
   ahash[p][:max] = [max,max_vent]
 end
 
-print ahash.sort_by{|p,h| -h[:avg_prop]}
-
-#topten = []
-
+'["PF01051", {:avg_prop=>0.017128828911598414, :min=>[3.0058155531108254e-06, "cayman_rise_unpublished_beebe_background_22"], :max=>[0.5055659649509534, "perner_sisters_peak_29"]}]'
+topten_pfam = []
+ahash.sort_by{|p,h| -h[:avg_prop]}.each_with_index do |k,idx|
+  if idx < 10
+    topten_pfam.push(k[0])
+  end
+end
 
 # write data for boxplot
 # pfam1    prop
@@ -71,8 +77,12 @@ print ahash.sort_by{|p,h| -h[:avg_prop]}
 # pfam2    prop
 # pfam2    prop
 #...
-
-#ahash.each do |
+puts 'pfam,freq'
+topten_pfam.each do |pfam|
+  phash[pfam].each do |v,p|
+    puts "#{pfam},#{p}"
+  end
+end
       
       
       
