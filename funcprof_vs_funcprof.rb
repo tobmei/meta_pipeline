@@ -81,7 +81,7 @@ ARGV.each do |vent|
     end                                                       
   end
 
-  `Rscript R/corr.r "#{vent}/profiles/functional/#{File.basename(vent)}_#{prof1}_vs_#{prof2}.csv" bla "#{vent}/profiles/functional/"`
+  `Rscript R/corr.r #{vent}/profiles/functional/#{File.basename(vent)}_#{prof1}_vs_#{prof2}.csv bla #{vent}/profiles/functional/`
 end
    
   
