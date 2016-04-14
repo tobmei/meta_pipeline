@@ -7,7 +7,7 @@ def combine(profiles_dir, out)
   classification_summary[:classified] = 0 
   classification_summary[:unclassified] = 0 
   classification_summary[:total] = 0 
-  Dir.glob("#{profiles_dir}/*.txt") do |file| 
+  Dir.glob("#{profiles_dir}/*_uproc.txt") do |file| 
     File.open(file).each_line do |line|
       l = line.split(',')
       if l.size == 3

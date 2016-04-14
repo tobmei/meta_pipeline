@@ -76,7 +76,7 @@ end
 # pfam2    prop
 # pfam2    prop
 #...
-CSV.open('boxplot_temp.csv', 'w') do |csv|
+CSV.open('/scratch/gi/coop/perner/metameta/stats/abundance/boxplot_temp_pfam.csv', 'w') do |csv|
   csv << ['pfam','freq']
   topten_pfam.each do |pfam|
     phash[pfam].each do |v,p|
@@ -86,13 +86,15 @@ CSV.open('boxplot_temp.csv', 'w') do |csv|
 end
 
 #write min max list
-CSV.open('minmax.csv', 'w') do |csv|
+CSV.open('/scratch/gi/coop/perner/metameta/stats/abundance/minmax_func.csv', 'w') do |csv|
   csv << ['pfam','min','min_vent','max','max_vent']
   topten_pfam.each do |pfam|
-    csv << [pfam,ahash[pfam][min][0],ahash[pfam][min][1],ahash[pfam][max][0],ahash[pfam][max][1]]
+    csv << [pfam,ahash[pfam][:min][0],ahash[pfam][:min][1],ahash[pfam][:max][0],ahash[pfam][:max][1]]
   end
 end
       
+`Rscript R/boxplot.r /scratch/gi/coop/perner/metameta/stats/abundance/boxplot_temp_pfam.csv pfam /scratch/gi/coop/perner/metameta/stats/abundance/abundance_func.pdf`
+`rm /scratch/gi/coop/perner/metameta/stats/abundance/boxplot_temp_pfam.csv`
       
       
       

@@ -34,7 +34,6 @@ ARGV.each do |vent|
        pfam_hash[pfam] = pfam_hash[pfam] == nil ? 1 : pfam_hash[pfam]+1
      end
      old_id = curr_id
-      break if class_count > 1000
    end
     
    puts "classified: #{class_count}"

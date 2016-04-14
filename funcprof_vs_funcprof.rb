@@ -2,16 +2,15 @@ require 'csv'
 
 prf1_hash = Hash.new
 prf2_hash = Hash.new
-prf1_count_hash = Hash.new
-prf2_count_hash = Hash.new
-prf1_sum = 0
-prf2_sum = 0
-
+# prf1_count_hash = Hash.new
+# prf2_count_hash = Hash.new
 
 prof1 = 'uproc'
 prof2 = 'diamond'
 
 ARGV.each do |vent| 
+  prf1_sum = 0
+  prf2_sum = 0
   puts vent
   dir1 = "#{vent}/profiles/functional/#{prof1}"
   dir2 = "#{vent}/profiles/functional/#{prof2}"
@@ -28,7 +27,7 @@ ARGV.each do |vent|
     prf1_hash[pfam] = prf1_hash[pfam] == nil ? count : prf1_hash[pfam]+count
     prf1_sum += count
   end
-  prf1_count_hash[vent] = prf1_sum
+#   prf1_count_hash[vent] = prf1_sum
     
   
   File.open("#{dir2}/#{prof2}.txt").each_line do |line|
@@ -40,7 +39,7 @@ ARGV.each do |vent|
     prf2_hash[pfam] = prf2_hash[pfam] == nil ? count : prf2_hash[pfam]+count
     prf2_sum += count
   end
-  prf2_count_hash[vent] = prf2_sum
+#   prf2_count_hash[vent] = prf2_sum
   
 # end  
   
@@ -81,7 +80,8 @@ ARGV.each do |vent|
     end                                                       
   end
 
-  `Rscript R/corr.r #{vent}/profiles/functional/#{File.basename(vent)}_#{prof1}_vs_#{prof2}.csv bla #{vent}/profiles/functional/`
+  `Rscript R/corr.r "#{vent}/profiles/functional/#{File.basename(vent)}_#{prof1}_vs_#{prof2}.csv" "UProC vs Diamond - #{vent}" "#{vent}/profiles/functional/uproc_vs_diamond.pdf"`
+
 end
    
   
