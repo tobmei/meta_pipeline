@@ -19,9 +19,9 @@ module Profiling
     `mkdir #{profiles_dir}` if !File.directory?(profiles_dir)
     Dir.glob("#{prepro_reads}/*fastq.gz") do |run|  
       run_nr = File.basename(run.sub('.fastq.gz',''))
-      next if File.exists?("#{profiles_dir}/#{run_nr}_matches.tab")
-#       `diamond blastx -d /scratch/gi/coop/perner/metameta/pfam27 -q #{run} -a #{profiles_dir}/#{run_nr}_matches`# -t #{prepro_reads}/temp`
-#       `diamond view -a #{vent}/profiles/functional/diamond/#{run_nr}_matches -o #{profiles_dir}/#{run_nr}_matches.tab --compress 1 -f tab`
+      #next if File.exists?("#{profiles_dir}/#{run_nr}_matches.tab")
+      `diamond blastx -d /scratch/gi/coop/perner/metameta/pfam27 -q #{run} -a #{profiles_dir}/#{run_nr}_matches`# -t #{prepro_reads}/temp`
+      `diamond view -a #{vent}/profiles/functional/diamond/#{run_nr}_matches -o #{profiles_dir}/#{run_nr}_matches.tab --compress 1 -f tab`
       `rm -f #{profiles_dir}/*.daa`
     end
 

@@ -119,8 +119,8 @@ if options[:classification]
   classification_summary = Hash.new  
   ARGV.each do |vent|
     `mkdir #{vent}/profiles` if !Dir.exists?("#{vent}/profiles")
-    `mkdir #{vent}/profiles/functional`
-    `mkdir #{vent}/profiles/taxonomic`
+    #`mkdir #{vent}/profiles/functional`
+    #`mkdir #{vent}/profiles/taxonomic`
     prepro_reads = "#{vent}/preprocessed_reads"
     profiles_dir = "#{vent}/profiles/functional/uproc"
     taxy_dir = "#{vent}/profiles/taxonomic/Taxy"
@@ -133,11 +133,11 @@ if options[:classification]
       puts "processing #{run_nr}: uproc"
       length = summary_file[File.basename(vent)].to_i <= 200 ? '-s' : '-l'
       puts "Uproc length option: #{length}"
-      Profiling.func_prof_uproc(run,length,profiles_dir)
+      #Profiling.func_prof_uproc(run,length,profiles_dir)
     end
-    summary = combine(profiles_dir,'uproc')
+    summary = Profiling.combine(profiles_dir,'uproc')
     classification_summary[vent] = summary  
-#     classification_summary[vent] = Profiling.func_prof_diamond(vent)
+    #classification_summary[vent] = Profiling.func_prof_diamond(vent)
   end
   
   #write classification summary to file

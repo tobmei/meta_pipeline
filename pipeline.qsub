@@ -1,6 +1,6 @@
 #! /bin/bash
 #$ -clear
-#$ -q hpc.q
+#$ -q 8c.q
 #$ -cwd
 #$ -V
 #$ -S /bin/bash
@@ -9,5 +9,5 @@
 #$ -t 1-33
 
 
-ruby /work/gi/coop/perner/metameta/meta_pipeline/main.rb --no-preprocessing -c -i /work/gi/coop/perner/metameta/meta_pipeline/seq_meta.tsv -o /scratch/gi/coop/perner/metameta /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
+ruby /work/gi/coop/perner/metameta/meta_pipeline/main.rb --no-preprocessing -c -i /work/gi/coop/perner/metameta/meta_pipeline/seq_meta.tsv /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
 
