@@ -4,10 +4,10 @@ require 'csv'
 module Profiling
   
   def Profiling.func_prof_uproc(run,length,profiles_dir)
-       run_nr = File.basename(run.sub('.fastq.gz',''))
-#     `uproc-dna -f -P 2 -c #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc_lessrestricitve.txt`
-#     `uproc-dna -p #{length} #{Paths.pfam27_uproc} #{Paths.model_uproc} #{run} > #{profiles_dir}/#{run_nr}_uproc_all.txt`
-      `uproc-dna -fc #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc.txt`
+   run_nr = File.basename(run.sub('.fastq.gz',''))
+   #`uproc-dna -f -P 2 -c #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc_lessrestricitve.txt`
+   #`uproc-dna -p #{length} #{Paths.pfam27_uproc} #{Paths.model_uproc} #{run} > #{profiles_dir}/#{run_nr}_uproc_all.txt`
+  `uproc-dna -fc #{length} data/pfam27_uproc data/model #{run} > #{profiles_dir}/#{run_nr}_uproc.txt`
   end
   
   def Profiling.func_prof_diamond(vent)
@@ -34,14 +34,14 @@ module Profiling
       gz = Zlib::GzipReader.new(infile)
       old_id = ''
       gz.each_line do |line|
-	l = line.split("\t")
-	curr_id = l[0]
-	if old_id != curr_id
-	  class_count += 1 
-	  pfam = l[1].scan(/(PF\d\d\d\d\d)/)[0][0]
-	  pfam_hash[pfam] += 1
-	end
-	old_id = curr_id
+	      l = line.split("\t")
+	      curr_id = l[0]
+	      if old_id != curr_id
+	        class_count += 1 
+	        pfam = l[1].scan(/(PF\d\d\d\d\d)/)[0][0]
+	        pfam_hash[pfam] += 1
+	      end
+	      old_id = curr_id
       end
       infile.close
     end
@@ -52,12 +52,12 @@ module Profiling
     CSV.open("#{profiles_dir}/diamond.txt", 'w') do |csv| 
       csv << [class_count,0,0]
       pfam_sorted.each do |i|
-	csv << [i[0],i[1]]
+        csv << [i[0],i[1]]
       end
     end
     
     summary = self.combine(profiles_dir,'diamond')
-#       `rm -f #{profiles_dir}/*.tab.gz`
+    #`rm -f #{profiles_dir}/*.tab.gz`
 
     summary
   end
@@ -69,13 +69,13 @@ module Profiling
   def Profiling.write_classification_summary(summary,method,output)
     if !File.exists?("#{output}/classification_summary_#{method}.csv")
       CSV.open("stats/classification_summary.csv", 'w') do |csv|
-	csv << ['vent','classified','unclassified','total']
+	      csv << ['vent','classified','unclassified','total']
       end
     end
 
     CSV.open("#{output}/classification_summary_#{method}.csv", 'a') do |csv|
       summary.each do |vent,s|
-	csv << [File.basename(vent),s[:classified],s[:unclassified],s[:total]]
+	      csv << [File.basename(vent),s[:classified],s[:unclassified],s[:total]]
       end
     end
   end
@@ -88,17 +88,17 @@ module Profiling
     classification_summary[:total] = 0 
     Dir.glob("#{profiles_dir}/*_#{out}.txt") do |file| 
       File.open(file).each_line do |line|
-	l = line.split(',')
-	if l.size == 3
-	  classification_summary[:classified] += l[0].chomp.to_i
-	  classification_summary[:unclassified] += l[1].chomp.to_i
-	  classification_summary[:total] += l[2].chomp.to_i
-	else
-	  fam = l[0]
-	  freq = l[1].chomp.to_i
-	  profile[fam] = 0 if profile[fam] == nil
-	  profile[fam] += freq
-	end
+	      l = line.split(',')
+	      if l.size == 3
+	        classification_summary[:classified] += l[0].chomp.to_i
+	        classification_summary[:unclassified] += l[1].chomp.to_i
+	        classification_summary[:total] += l[2].chomp.to_i
+	      else
+	        fam = l[0]
+	        freq = l[1].chomp.to_i
+	        profile[fam] = 0 if profile[fam] == nil
+	        profile[fam] += freq
+	      end
       end    
     end
     
@@ -108,10 +108,10 @@ module Profiling
     CSV.open("#{profiles_dir}/#{out}.txt", 'w') do |csv|
       csv << ['pfam','count']
       profile.each do |fam,freq|
-  #       pfam_desc = `grep #{fam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
-  #       pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[0..30]}..." : pfam_desc
-  #       f.puts "#{pfam_desc.gsub(',',' ')}(#{fam}),#{freq}"
-	csv << [fam,freq]
+        #pfam_desc = `grep #{fam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
+        #pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[0..30]}..." : pfam_desc
+        #f.puts "#{pfam_desc.gsub(',',' ')}(#{fam}),#{freq}"
+	      csv << [fam,freq]
       end
     end
     

@@ -1,4 +1,4 @@
-require '/work/gi/coop/perner/metameta/scripts/giorgios_fastq_iterator'
+require_relative 'giorgios_fastq_iterator'
 
 if ARGV.size != 3
   puts 'Usage: ruby delete_unpaired_reads.rb <raw.fastq> <preprocessed1.fastq> <preprocessed2.fastq>'
@@ -49,7 +49,7 @@ for i in 1..orig_size.to_i/4
   end
   
   if id_orig == id_fastq1 && id_orig == id_fastq2
-    #id_fastq2 and id_fastq3 are mates -> keep
+    #id_fastq1 and id_fastq2 are mates -> keep
     f_out1.puts unit_fastq1.desc
     f_out1.puts unit_fastq1.seq
     f_out1.puts unit_fastq1.qdesc
@@ -63,11 +63,11 @@ for i in 1..orig_size.to_i/4
     #both pairs with id_orig were filtered
     next_unit2 = next_unit3 = false
   elsif id_orig == id_fastq1 && id_orig != id_fastq2
-    #id_fastq1 has no mate -> delete
+    #id_fastq1 has no mate -> drop
     next_unit2 = true
     next_unit3 = false
   elsif id_orig != id_fastq1 && id_orig == id_fastq2
-    #id_fastq2 has no mate -> delete
+    #id_fastq2 has no mate -> drop
     next_unit2 = false
     next_unit3 = true
   end

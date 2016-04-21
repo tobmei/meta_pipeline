@@ -12,13 +12,13 @@ module Preprocess
     if init_file[:platform] == 'illumina'
       puts "processing #{run_nr}: illumina adapter trimming"
       if pe
-	execute("java -jar /work/gi/software/bin/trimmomatic-0.33.jar PE #{run} #{raw_reads}/#{run_nr2}.fastq.gz #{prepro_reads}/#{run_nr}_1p.fastq.gz #{prepro_reads}/#{run_nr}_1u.fastq.gz #{prepro_reads}/#{run_nr}_2p.fastq.gz #{prepro_reads}/#{run_nr}_2u.fastq.gz ILLUMINACLIP:data/adapters.fa:2:30:10:8:TRUE")
+	      execute("java -jar /work/gi/software/bin/trimmomatic-0.33.jar PE #{run} #{raw_reads}/#{run_nr2}.fastq.gz #{prepro_reads}/#{run_nr}_1p.fastq.gz #{prepro_reads}/#{run_nr}_1u.fastq.gz #{prepro_reads}/#{run_nr}_2p.fastq.gz #{prepro_reads}/#{run_nr}_2u.fastq.gz ILLUMINACLIP:data/adapters.fa:2:30:10:8:TRUE")
         execute("rm -f #{prepro_reads}/#{run_nr}_1u.fastq.gz")
         execute("rm -f #{prepro_reads}/#{run_nr}_2u.fastq.gz")
         execute("mv #{prepro_reads}/#{run_nr}_1p.fastq.gz #{prepro_reads}/#{run_nr}.fastq.gz")
         execute("mv #{prepro_reads}/#{run_nr}_2p.fastq.gz #{prepro_reads}/#{run_nr2}.fastq.gz")
       else
-	execute("java -jar /work/gi/software/bin/trimmomatic-0.33.jar SE #{run} #{prepro_reads}/#{run_nr}.fastq.gz ILLUMINACLIP:data/adapters.fa:2:30:10:8:TRUE")
+	      execute("java -jar /work/gi/software/bin/trimmomatic-0.33.jar SE #{run} #{prepro_reads}/#{run_nr}.fastq.gz ILLUMINACLIP:data/adapters.fa:2:30:10:8:TRUE")
       end
     end
     
@@ -37,45 +37,45 @@ module Preprocess
     execute("mv #{prepro_reads}/#{run_nr2}_novector.fastq #{prepro_reads}/#{run_nr2}.fastq") if pe
     
     
-#     puts "processing #{run_nr}: tag trimming"
-#     output = execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr}.fastq -predict | ruby run_tagclean.rb")
-#     puts output
-#     output = output.split("\n")
-#     tag1 = output[0] != nil ? "-#{output[0]}" : ''
-#     seq1 = output[1] != nil ? output[1] : ''
-#     tag2 = output[2] != nil ? "-#{output[2]}" : ''
-#     seq2 = output[3] != nil ? output[3] : ''
-#     if tag1 != ''
-#       execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr}.fastq #{tag1} #{seq1} #{tag2} #{seq2} -verbose -out #{prepro_reads}/#{run_nr}_tagclean")
-#       execute("rm -f #{prepro_reads}/#{run_nr}.fastq")
-#       execute("mv #{prepro_reads}/#{run_nr}_tagclean.fastq #{prepro_reads}/#{run_nr}.fastq")
-#     end
-#     if init_file[:adapter_seq] != ''
-#       execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr}.fastq #{init_file[:adapter_seq]} -verbose -out #{prepro_reads}/#{run_nr}_tagclean")
-#       execute("rm -f #{prepro_reads}/#{run_nr}.fastq")
-#       execute("mv #{prepro_reads}/#{run_nr}_tagclean.fastq #{prepro_reads}/#{run_nr}.fastq")
-#     end
-#     
-#     if pe
-#       puts "processing #{run_nr2}: tag trimming"
-#       output = execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr2}.fastq -predict | ruby run_tagcleaner.rb")
-#       puts output
-#       output = output.split("\n")
-#       tag1 = output[0] != nil ? "-#{output[0]}" : ''
-#       seq1 = output[1] != nil ? output[1] : ''
-#       tag2 = output[2] != nil ? "-#{output[2]}" : ''
-#       seq2 = output[3] != nil ? output[3] : ''
-#       if tag1 != ''
-# 	execute("#{Paths.tagcleaner} -fastq #{prepro_reads}/#{run_nr2}.fastq #{tag1} #{seq1} #{tag2} #{seq2} -verbose -out #{prepro_reads}/#{run_nr2}_tagclean")
-# 	execute("rm -f #{prepro_reads}/#{run_nr2}_novector.fastq")
-#         execute("mv #{prepro_reads}/#{run_nr2}_tagclean.fastq #{prepro_reads}/#{run_nr2}.fastq")
-#       end
-#       if init_file[:adapter_seq] != ''
-# 	execute("#{Paths.tagcleaner} -fastq #{prepro_reads}/#{run_nr2}.fastq #{init_file[:adapter_seq]} -verbose -out #{prepro_reads}/#{run_nr2}_tagclean")
-# 	execute("rm -f #{prepro_reads}/#{run_nr2}.fastq")
-# 	execute("mv #{prepro_reads}/#{run_nr2}_tagclean.fastq #{prepro_reads}/#{run_nr2}.fastq")
-#       end
-#     end
+     puts "processing #{run_nr}: tag trimming"
+     output = execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr}.fastq -predict | ruby run_tagclean.rb")
+     puts output
+     output = output.split("\n")
+     tag1 = output[0] != nil ? "-#{output[0]}" : ''
+     seq1 = output[1] != nil ? output[1] : ''
+     tag2 = output[2] != nil ? "-#{output[2]}" : ''
+     seq2 = output[3] != nil ? output[3] : ''
+     if tag1 != ''
+       execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr}.fastq #{tag1} #{seq1} #{tag2} #{seq2} -verbose -out #{prepro_reads}/#{run_nr}_tagclean")
+       execute("rm -f #{prepro_reads}/#{run_nr}.fastq")
+       execute("mv #{prepro_reads}/#{run_nr}_tagclean.fastq #{prepro_reads}/#{run_nr}.fastq")
+     end
+     if init_file[:adapter_seq] != ''
+       execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr}.fastq #{init_file[:adapter_seq]} -verbose -out #{prepro_reads}/#{run_nr}_tagclean")
+       execute("rm -f #{prepro_reads}/#{run_nr}.fastq")
+       execute("mv #{prepro_reads}/#{run_nr}_tagclean.fastq #{prepro_reads}/#{run_nr}.fastq")
+     end
+     
+     if pe
+       puts "processing #{run_nr2}: tag trimming"
+       output = execute("perl /work/gi/software/bin/tagcleaner.pl -fastq #{prepro_reads}/#{run_nr2}.fastq -predict | ruby run_tagcleaner.rb")
+       puts output
+       output = output.split("\n")
+       tag1 = output[0] != nil ? "-#{output[0]}" : ''
+       seq1 = output[1] != nil ? output[1] : ''
+       tag2 = output[2] != nil ? "-#{output[2]}" : ''
+       seq2 = output[3] != nil ? output[3] : ''
+       if tag1 != ''
+ 	       execute("#{Paths.tagcleaner} -fastq #{prepro_reads}/#{run_nr2}.fastq #{tag1} #{seq1} #{tag2} #{seq2} -verbose -out #{prepro_reads}/#{run_nr2}_tagclean")
+ 	       execute("rm -f #{prepro_reads}/#{run_nr2}_novector.fastq")
+         execute("mv #{prepro_reads}/#{run_nr2}_tagclean.fastq #{prepro_reads}/#{run_nr2}.fastq")
+       end
+       if init_file[:adapter_seq] != ''
+ 	       execute("#{Paths.tagcleaner} -fastq #{prepro_reads}/#{run_nr2}.fastq #{init_file[:adapter_seq]} -verbose -out #{prepro_reads}/#{run_nr2}_tagclean")
+ 	       execute("rm -f #{prepro_reads}/#{run_nr2}.fastq")
+ 	       execute("mv #{prepro_reads}/#{run_nr2}_tagclean.fastq #{prepro_reads}/#{run_nr2}.fastq")
+       end
+     end
 
     
     if init_file[:fosmid_based] == 'y'
@@ -85,18 +85,18 @@ module Preprocess
       execute("#{Paths.fastq2fasqual} #{prepro_reads}/#{run_nr2}") if pe
       execute("#{Paths.formatdb} -i #{Paths.host} -p F")
       if pe
-	execute("#{Paths.seqclean} #{prepro_reads}/#{run_nr}.fna -s #{Paths.host} -v #{Paths.fosmid} -y 8 -N -M -A -L -l 0 -c 4 -r #{prepro_reads}/#{run_nr}.cln -o #{prepro_reads}/#{run_nr}.fasta.clean")
-	execute("#{Paths.seqclean} #{prepro_reads}/#{run_nr2}.fna -s #{Paths.host} -v #{Paths.fosmid} -y 8 -N -M -A -L -l 0 -c 4 -r #{prepro_reads}/#{run_nr2}.cln -o #{prepro_reads}/#{run_nr2}.fasta.clean")
+	      execute("#{Paths.seqclean} #{prepro_reads}/#{run_nr}.fna -s #{Paths.host} -v #{Paths.fosmid} -y 8 -N -M -A -L -l 0 -c 4 -r #{prepro_reads}/#{run_nr}.cln -o #{prepro_reads}/#{run_nr}.fasta.clean")
+	      execute("#{Paths.seqclean} #{prepro_reads}/#{run_nr2}.fna -s #{Paths.host} -v #{Paths.fosmid} -y 8 -N -M -A -L -l 0 -c 4 -r #{prepro_reads}/#{run_nr2}.cln -o #{prepro_reads}/#{run_nr2}.fasta.clean")
       else
-	execute("#{Paths.seqclean} #{prepro_reads}/#{run_nr}.fna -s #{Paths.host} -v #{Paths.fosmid} -y 8 -N -M -A -L -l 0 -c 4 -r #{prepro_reads}/#{run_nr}.cln -o #{prepro_reads}/#{run_nr}.fasta.clean")
+	      execute("#{Paths.seqclean} #{prepro_reads}/#{run_nr}.fna -s #{Paths.host} -v #{Paths.fosmid} -y 8 -N -M -A -L -l 0 -c 4 -r #{prepro_reads}/#{run_nr}.cln -o #{prepro_reads}/#{run_nr}.fasta.clean")
       end
       execute("rm -rf #{Paths.scripts}/*.cidx #{Paths.scripts}/*.sort #{Paths.scripts}/cleaning_* #{Paths.scripts}/*.log")
       
       #run cln2qual. generates .qual.clean from .cln and .qual (-> quality file without trimmed sequences)
       puts "processing #{run}: cln2qual"
       if !File.exist?("#{prepro_reads}/#{run_nr}.qual.clean")
-	execute("#{Paths.cln2qual} #{prepro_reads}/#{run_nr2}.cln #{prepro_reads}/#{run_nr2}.qual") if pe
-	execute("#{Paths.cln2qual} #{prepro_reads}/#{run_nr}.cln #{prepro_reads}/#{run_nr}.qual")
+	      execute("#{Paths.cln2qual} #{prepro_reads}/#{run_nr2}.cln #{prepro_reads}/#{run_nr2}.qual") if pe
+	      execute("#{Paths.cln2qual} #{prepro_reads}/#{run_nr}.cln #{prepro_reads}/#{run_nr}.qual")
       end
       
       #run fasqual2fastq. generate .fastq from .clean and qual.clean 
@@ -107,15 +107,15 @@ module Preprocess
       execute("rm -f #{prepro_reads}/*.fasta #{prepro_reads}/*.clean #{prepro_reads}/*.qual #{prepro_reads}/*.cln #{prepro_reads}/*.fna")
       
       if pe
-	#Seqclean cannot handle paired-end reads. Thus each file is processed seperately which can lead to unsynchronized paired-read files
-	#run delete_unpaired_reads.rb to synchronize paired-read files
-	puts "synchronizing paired-read files for #{run} and #{run_nr2}"
-	execute("gzip -dk #{raw_reads}/#{run_nr}.fastq.gz")
-	execute("ruby #{Paths.delete_unpaired_reads} #{raw_reads}/#{run_nr}.fastq #{prepro_reads}/#{run_nr}.fastq #{prepro_reads}/#{run_nr2}.fastq")
-	execute("rm -f #{prepro_reads}/#{run_nr}.fastq #{prepro_reads}/#{run_nr2}.fastq")
-	execute("rm -f #{raw_reads}/#{run_nr}.fastq")
-	execute("mv #{prepro_reads}/#{run_nr}_merged1.fastq #{prepro_reads}/#{run_nr}.fastq")
-	execute("mv #{prepro_reads}/#{run_nr2}_merged2.fastq #{prepro_reads}/#{run_nr2}.fastq")
+	      #Seqclean cannot handle paired-end reads. Thus each file is processed seperately which can lead to unsynchronized paired-read files
+	      #run delete_unpaired_reads.rb to synchronize paired-read files
+	      puts "synchronizing paired-read files for #{run} and #{run_nr2}"
+	      execute("gzip -dk #{raw_reads}/#{run_nr}.fastq.gz")
+	      execute("ruby #{Paths.delete_unpaired_reads} #{raw_reads}/#{run_nr}.fastq #{prepro_reads}/#{run_nr}.fastq #{prepro_reads}/#{run_nr2}.fastq")
+	      execute("rm -f #{prepro_reads}/#{run_nr}.fastq #{prepro_reads}/#{run_nr2}.fastq")
+	      execute("rm -f #{raw_reads}/#{run_nr}.fastq")
+	      execute("mv #{prepro_reads}/#{run_nr}_merged1.fastq #{prepro_reads}/#{run_nr}.fastq")
+	      execute("mv #{prepro_reads}/#{run_nr2}_merged2.fastq #{prepro_reads}/#{run_nr2}.fastq")
       end
     end
     
