@@ -2,6 +2,10 @@ require 'open-uri'
 require 'json'
 require 'csv'
 
+#This script performs a COG2Pfam and NOG2Uniprot2Pfam mapping
+#in order transform the NOG/COG functional profile to a pfam profile
+#Usage: ruby tara2pfamprofile <tara_vent>
+
 base_egg = "http://eggnogapi.embl.de/nog_data/json/domains"
 base_up = "http://www.uniprot.org/uniprot"
 cog_id = ''
@@ -90,6 +94,8 @@ puts 'pfam,count'
 profile_hash.each do |pfam,count|
   puts "#{pfam},#{count}"
 end
+
+
 
 
 

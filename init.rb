@@ -6,6 +6,11 @@ vents_folder = ARGV[0]
 stats_folder = ARGV[1]
 accessions = ARGV[2] != nil ? ARGV[2] : nil
 
+if accessions != nil
+   require 'nokogiri'
+   require 'net/http'
+end
+
 
 if ARGV.size < 2 
   puts "Usage: ruby init.rb <vents_folder> <output_folder> [accession_file]"
@@ -85,7 +90,7 @@ end
 
 def write_options(vents,mode,stats_folder)
   CSV.open("#{stats_folder}/options.tsv", mode, :col_sep=>"\t") do |csv|
-    csv << ['vent','platform','fosmid_based(y/n)','adapter/tag_seq','GO_IDs'] if mode == 'w'
+    csv << ['vent','platform','fosmid_based(y/n)','adapter/tag_seq','pfam2go'] if mode == 'w'
     vents.each do |vent|
       csv << [vent]
     end
@@ -109,8 +114,7 @@ def write_meta(vents,mode,stats_folder,accessions)
 end
       
 def check_requirements()
-  executables = ['fastqc','seqtk','prinseq-lite.pl','cln2qual','gt','bwa','samtools',
-                 'tagcleaner.pl','bedtools','uproc-dna','sra-dump','diamond','taxy_script.m']#,'trimmomatic-0.33.jar']
+  executables = ['fastqc','seqtk','cln2qual','gt','bwa','samtools','bedtools','uproc-dna','sra-dump','diamond']
   check = true
   puts 'Looking for required executables...'
   executables.each do |exec|
@@ -128,8 +132,6 @@ def check_requirements()
 end 
      
 def get_metadata(accessions)
-  require 'nokogiri'
-  require 'net/http'
   base = 'http://eutils.ncbi.nlm.nih.gov/entrez/eutils'
   search_biosample = 'esearch.fcgi?tool=ruby&email=tobias.meier@studium.uni-hamburg.de&db=biosample&term'
   search_sra = 'esearch.fcgi?tool=ruby&email=tobias.meier@studium.uni-hamburg.de&db=sra&usehistory=y&term'

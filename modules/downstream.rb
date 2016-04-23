@@ -9,27 +9,29 @@ module Downstream
     hash = Hash.new
     stamp_hash = Hash.new
     vents.each do |vent|
+      next if vent =~ /TARA/
       vent_base = File.basename(vent)
       profiles_dir = "#{vent}/profiles/functional/uproc"
       uproc_file = "#{profiles_dir}/uproc.txt"
       vents_arr.push(vent_base) 
       File.open(uproc_file).each do |line|
-	      l = line.split(',')
-	      if l[0] == nil || l[1] == nil
-	        STDERR.puts "Something went wrong while reading the file #{tax_file}. Could not split the line with ','. Maybe the file has a different separator?"
-	        exit 1
-	      end
-	      next if l[0] == 'pfam'
-	      pfam_id = l[0]
-	      counts = l[1].chomp
+        l = line.split(',')
+        if l[0] == nil || l[1] == nil
+          STDERR.puts "Something went wrong while reading the file #{tax_file}. Could not split the line with ','. Maybe the file has a different separator?"
+          exit 1
+        end
+        next if l[0] == 'pfam'
+        pfam_id = l[0]
+        counts = l[1].chomp
 
-	      stamp_hash[pfam_id] = Hash.new(0) if !stamp_hash.has_key?(pfam_id)
-	      stamp_hash[pfam_id][vent_base] = counts
+        stamp_hash[pfam_id] = Hash.new(0) if !stamp_hash.has_key?(pfam_id)
+        stamp_hash[pfam_id][vent_base] = counts
 
-	      pfam_arr.push(pfam_id) if !pfam_arr.include?(pfam_id)
-	      hash[vent_base] = Hash.new(0) if hash[vent_base] == nil
-	      hash[vent_base][pfam_id] = counts.chomp
+        pfam_arr.push(pfam_id) if !pfam_arr.include?(pfam_id)
+        hash[vent_base] = Hash.new(0) if hash[vent_base] == nil
+        hash[vent_base][pfam_id] = counts.chomp
       end
+      hash = Hash[hash.sort]
     end
     self.write_csv(hash,pfam_arr,"#{output}/functional_profile.csv",',')  
     self.write_csv(stamp_hash,vents_arr,"#{output}/functional_profile_stamp_compatible.csv","\t")  
@@ -40,32 +42,34 @@ module Downstream
     vf_hash = Hash.new
     vents.each do |vent|
       ve = File.basename(vent)
+      next if vent =~ /TARA/
       ['kingdom','phylum','class','order','family','genus','species'].each do |tax|
         tax_file = nil
-	      Dir.glob("#{vent}/profiles/taxonomic/Taxy/*ID.csv") do |file|
-	        tax_file = file if file =~ /#{tax}/
-	      end
-	      if tax_file == nil
-	        STDERR.puts "No taxonomic file found for #{vent}. You should check the folder."
-	        exit 1
-	      end
-	      File.open(tax_file).each_line do |line|
-	        l = line.split(',')
-	        if l[0] == nil || l[1] == nil
-	          STDERR.puts "Something went wrong while reading the file #{tax_file}. Could not split the line with ','. Maybe the file has a different separator?"
-	          exit 1
-	        end
-	        next if l[0] == 'taxon'
-	        freq = l[1].chomp.to_f
-	        t = l[0]
+        Dir.glob("#{vent}/profiles/taxonomic/Taxy/*ID.csv") do |file|
+          tax_file = file if file =~ /#{tax}/
+        end
+        if tax_file == nil
+          STDERR.puts "No taxonomic file found for #{vent}. You should check the folder."
+          exit 1
+        end
+        File.open(tax_file).each_line do |line|
+          l = line.split(',')
+          if l[0] == nil || l[1] == nil
+            STDERR.puts "Something went wrong while reading the file #{tax_file}. Could not split the line with ','. Maybe the file has a different separator?"
+            exit 1
+          end
+          next if l[0] == 'taxon'
+          freq = l[1].chomp.to_f
+          t = l[0]
           #next if t =~ /Unknown/
           #t = 'Unknown' if t =~ /Unknown/
-	        tax_arr.push(t) if !tax_arr.include?(t)
-	        vf_hash[ve] = Hash.new(0.0) if vf_hash[ve] == nil
-	        vf_hash[ve][t] += freq
-	      end
-        self.write_csv(vf_hash,tax_arr,"#{output}/taxonomic_profile_#{tax}_level.csv")
-	      tax_arr = []
+          tax_arr.push(t) if !tax_arr.include?(t)
+          vf_hash[ve] = Hash.new(0.0) if vf_hash[ve] == nil
+          vf_hash[ve][t] += freq
+        end
+        vf_hash = Hash[vf_hash.sort]
+        self.write_csv(vf_hash,tax_arr,"#{output}/taxonomic_profile_#{tax}_level.csv",",")
+        tax_arr = []
       end
     end
   end
@@ -74,30 +78,31 @@ module Downstream
     vents_arr = ['Category']
     hash = Hash.new
     vents.each do |vent|
+      next if vent =~ /TARA/
       tax_file = nil
       Dir.glob("#{vent}/profiles/taxonomic/Taxy/*ID.csv") do |file|
-	      tax_file = file if file =~ /species/
+        tax_file = file if file =~ /species/
       end
       if tax_file == nil
-	      STDERR.puts "No taxonomic file found for #{vent}. You should check the folder."
-	      exit 1
+        STDERR.puts "No taxonomic file found for #{vent}. You should check the folder."
+        exit 1
       end
       ve = File.basename(vent)
       vents_arr.push(ve) 
       File.open(tax_file).each_line do |line|
-	      l = line.split(",")
-	      next if l[0] == 'taxon'
-	      freq = l[1].chomp
+        l = line.split(",")
+        next if l[0] == 'taxon'
+        freq = l[1].chomp
         #superkingdom = l[1].chomp
         #phylum = l[2].chomp
         #clas = l[3].chomp
         #order = l[4].chomp
         #family = l[5].chomp
         #genus = l[6].chomp
-	      species = l[0].chomp
+        species = l[0].chomp
         #species = 'Unknown' if species =~ /Unknown/
-	      hash[species] = Hash.new(0.0) if !hash.has_key?(species)
-	      hash[species][ve] = freq
+        hash[species] = Hash.new(0.0) if !hash.has_key?(species)
+        hash[species][ve] = freq
       end
     end
     self.write_csv(hash,vents_arr,"#{output}/taxonomic_profile_species_level_stamp.csv","\t")
@@ -124,7 +129,7 @@ module Downstream
     count = 0
     cat_hash.each do |cat,vals|
       vals.each do |val|
-	      count += 1 if val != nil && val != 'unclassified'
+        count += 1 if val != nil && val != 'unclassified'
       end
       cats.push(cat) if count > 5
       count = 0
@@ -136,14 +141,14 @@ module Downstream
     if !File.exists?("#{out}anosim.csv")
       CSV.open("#{out}anosim.csv", 'w') do |csv|
         csv << ['grouping','R','p-value']
-	      result.each do |r|
-	        r = r.split("\n")
-	        next if r[0] == nil || r[1] == nil || r[2] == nil
-	        group = r[0].split(' ')[1] != nil ? r[0].split(' ')[1] : 'n.a.'
-	        stat = r[1].split(' ')[1] != nil ? r[1].split(' ')[1] : 'n.a.'
-	        pvalue = r[2].split(' ')[1] != nil ? r[2].split(' ')[1] : 'n.a.'
-	        csv << [group,stat,pvalue]
-	      end
+        result.each do |r|
+          r = r.split("\n")
+          next if r[0] == nil || r[1] == nil || r[2] == nil
+          group = r[0].split(' ')[1] != nil ? r[0].split(' ')[1] : 'n.a.'
+          stat = r[1].split(' ')[1] != nil ? r[1].split(' ')[1] : 'n.a.'
+          pvalue = r[2].split(' ')[1] != nil ? r[2].split(' ')[1] : 'n.a.'
+          csv << [group,stat,pvalue]
+        end
       end
     end 
   end
@@ -154,13 +159,13 @@ module Downstream
       row_arr = []
       csv << arr
       hash.each do |k,v|
-	      row_arr.push(k)
-	      arr.each do |t|
-	        next if t == 'Category'
-	        row_arr.push(v[t])
-	      end
+        row_arr.push(k)
+        arr.each do |t|
+          next if t == 'Category'
+          row_arr.push(v[t])
+        end
         csv << row_arr
-	      row_arr = []
+        row_arr = []
       end
     end
   end
@@ -180,8 +185,6 @@ module Downstream
     end
   end
       
-  
-  
   def Downstream.stamp_call(profile,metadata,field,out_dir)
     output = `python /work/gi/software/stamp-2.0.1/commandLine.py --typeOfTest 'Multiple groups' --profile #{profile} --metadata #{metadata} --field #{field} --statTest 'ANOVA' --outputTable #{out_dir}/stamp_result_temp.tsv`
     puts output
@@ -204,13 +207,13 @@ module Downstream
     File.open(metadata).each do |line|
       line = line.split("\t")
       if line[0] == 'vent'
-	      line.each do |v|
-	      if group == v.chomp
-	        idx = i
-	      end
-	      i += 1
-	    end
-	    next
+        line.each do |v|
+        if group == v.chomp
+          idx = i
+        end
+        i += 1
+      end
+      next
     end
     vent = line[0]
     to_plot = line[1]
@@ -231,14 +234,14 @@ module Downstream
     File.open(stamp_file).each_with_index do |row, index|
       row = row.split("\t")
       if row[0] =~ /Category/
-	      header = row
-	      next
+        header = row
+        next
       end
       pvalue = row[2].to_f
       effect = row[3].to_f
       if effect > max_effect
-	      effect_index = index
-	      max_effect = effect
+        effect_index = index
+        max_effect = effect
       end
     end
     if header == nil
@@ -257,15 +260,15 @@ module Downstream
     plot_hash = Hash.new
     h.each do |k,v|
       if k =~ /: rel. freq./
-	      vent = k.scan(/^[^\:]*/)[0]
-	      plot_hash[vent] = [group_hash[vent],v]
+        vent = k.scan(/^[^\:]*/)[0]
+        plot_hash[vent] = [group_hash[vent],v]
       end
     end
 
     CSV.open("#{out_dir}/stamp_bar_temp.tsv", "w", :col_sep => "\t") do |csv|
       csv << ['vent','value','Gruppe']
       plot_hash.each do |vent,v|
-	      csv << [name_to_plot[vent],v[1],v[0]]
+        csv << [name_to_plot[vent],v[1],v[0]]
       end
     end
 
@@ -393,7 +396,7 @@ module Downstream
 
     # write data for boxplot
     CSV.open('/scratch/gi/coop/perner/metameta/stats/abundance/boxplot_temp_pfam.csv', 'w') do |csv|
-      csv << ['pfam','freq']
+      csv << ['pfam','freq']#uproc vs diamond
       topten_pfam.each do |pfam|
         phash[pfam].each do |v,p|
          csv << [pfam,p]
@@ -456,12 +459,12 @@ module Downstream
         avg = 0.0
         h.each do |v,rp|
           if rp < min
-	          min = rp
-	          min_vent = v
+            min = rp
+            min_vent = v
           end
           if rp > max
-	          max = rp
-	          max_vent = v
+            max = rp
+            max_vent = v
           end
           prop_sum += rp
         end
@@ -483,7 +486,7 @@ module Downstream
         csv << ['tax','freq']
         topten_pfam.each do |pfam|
           phash[pfam].each do |v,p|
-	        pfam = pfam.length > 30 ? "#{pfam[0..30]}..." : pfam
+          pfam = pfam.length > 30 ? "#{pfam[0..30]}..." : pfam
           csv << [pfam,p]
           end
         end
@@ -517,7 +520,7 @@ module Downstream
           next if line[0] == 'taxon'
           taxon = line[0]
           if taxon =~ /Unknown/
-	          taxon = "Unknown #{taxon.match(/(?![ Unknown ]).*/)}"
+            taxon = "Unknown #{taxon.match(/(?![ Unknown ]).*/)}"
           end
           freq = line[1].chomp.to_f
           hash[taxon] = freq
@@ -526,11 +529,35 @@ module Downstream
         CSV.open(file_metapipe, "w") do |csv|
           csv << ['taxon','frequency']
           hash.each do |taxon,freq|
-	          csv << [taxon,freq]                                                     
+            csv << [taxon,freq]                                                     
           end                                                       
         end
         
       end
+      hash = Hash.new(0.0)
+      i = 0
+      next if !File.exists?("#{vent}/profiles/taxonomic/Taxy/uproc_complete.csv") 
+      File.open("#{vent}/profiles/taxonomic/Taxy/uproc_complete.csv").each do |line|
+        line = line.split("\t")
+        next if line[0] == '#frequency' || line[0] == 'frequency'
+        a = line[1] =~ /Unknown/ ? "Unknown #{line[1].match(/(?![ Unknown ]).*/)}".chomp : line[1].chomp 
+        b = line[2] =~ /Unknown/ ? "Unknown #{line[2].match(/(?![ Unknown ]).*/)}".chomp : line[2].chomp 
+        c = line[3] =~ /Unknown/ ? "Unknown #{line[3].match(/(?![ Unknown ]).*/)}".chomp : line[3].chomp 
+        d = line[4] =~ /Unknown/ ? "Unknown #{line[4].match(/(?![ Unknown ]).*/)}".chomp : line[4].chomp 
+        e = line[5] =~ /Unknown/ ? "Unknown #{line[5].match(/(?![ Unknown ]).*/)}".chomp : line[5].chomp 
+        f = line[6] =~ /Unknown/ ? "Unknown #{line[6].match(/(?![ Unknown ]).*/)}".chomp : line[6].chomp 
+        g = line[7] =~ /Unknown/ ? "Unknown #{line[7].match(/(?![ Unknown ]).*/)}".chomp : line[7].chomp 
+        freq = line[0]
+        hash[i] = [freq,a,b,c,d,e,f,g]
+        i += 1
+      end
+      CSV.open("#{vent}/profiles/taxonomic/Taxy/uproc_complete.csv", "w", :col_sep=>"\t") do |csv|
+          csv << ['frequency','superkingdom','phylum','class','order','family','genus','species']
+          hash.each do |i,arr|
+            csv << [arr[0],arr[1],arr[2],arr[3],arr[4],arr[5],arr[6],arr[7]]                                                     
+          end                                                       
+        end
+      
     end
   end
      
@@ -548,9 +575,12 @@ module Downstream
       puts vent
       dir1 = "#{vent}/profiles/functional/#{prof1}"
       dir2 = "#{vent}/profiles/functional/#{prof2}"
-      next if !File.exists?("#{dir1}/#{prof1}.txt") ||  !File.exists?("#{dir2}/#{prof2}.txt")
-      prf1_hash[vent] = Hash.new
-      prf2_hash[vent] = Hash.new
+      if !File.exists?("#{dir1}/#{prof1}.txt") ||  !File.exists?("#{dir2}/#{prof2}.txt")
+        puts "#{prof1} or #{prof2} profile file not found. Skipping #{File.basename(vent)}."
+        next
+      end
+      prf1_hash = Hash.new
+      prf2_hash = Hash.new
       
       File.open("#{dir1}/#{prof1}.txt").each_line do |line|
         line = line.split(',')
@@ -589,84 +619,65 @@ module Downstream
         end                                                       
       end
 
-      `Rscript R/corr.r "#{vent}/profiles/functional/#{File.basename(vent)}_#{prof1}_vs_#{prof2}.csv" "UProC vs Diamond - #{vent}" "#{vent}/profiles/functional/uproc_vs_diamond.pdf"`
+      `Rscript R/corr.r "#{vent}/profiles/functional/#{File.basename(vent)}_#{prof1}_vs_#{prof2}.csv" "UProC vs Diamond" "#Klassifizierungen - #{prof1}" "#Klassifizierungen - #{prof2}" "#{vent}/profiles/functional/#{File.basename(vent)}_uproc_vs_diamond.pdf"`
 
     end
   end
   
-  def Downstream.pfam2go(vent,go)
+  def Downstream.pfam2go(vent,go,summary,out)
     pfams = []
     File.open("data/pfam2go.txt").each_line do |line|
       next if line[0] == !
       l = line.split(">")
-      go = l[1] =~ /#{go}/ #GO:0004803 -> transposase activity
-      if go != nil
+      if l[1] =~ /#{go}/ #GO:0004803 -> transposase activity
         pfams.push(l[0].split(" ")[0].split(":")[1])
       end
     end
-
     pfam_arr = []
-    vcounts_hash = Hash.new
+    hash = Hash.new
     
     profiles_dir = "#{vent}/profiles/functional/uproc"
     ve = File.basename(vent)
     row_arr = [ve]
-    uproc_file = "#{profiles_dir}/uproc.txt"
+    uproc_file = "#{profiles_dir}/uproc_desc.txt"
+    if !File.exists?(uproc_file)
+      STDERR.puts "#{uproc_file} not found."
+      exit 1
+    end
+    if !File.exists?("#{summary}/classification_summary_uproc.csv")
+      STDERR.puts "#{summary}/classification_summary_uproc.csv not found."
+      exit 1
+    end
+    total_classified = 0
+    File.open("#{summary}/classification_summary_uproc.csv").each_line do |li|
+      li = li.split(",")
+      next if li[0] != ve
+      total_classified = li[1]
+      break
+    end
     File.open(uproc_file).each_line do |line|
       l = line.split(',')
+      next if l[0] == 'pfam'
       pfam_id = l[0]
-      counts = l[1]
-      perc=77
-      File.open('stats/classification_count.csv').each_line do |li|
-        li = li.split("&")
-        next if li[0] != ve
-        perc = (counts.to_f*100/li[1].to_f).to_f
-      end
-      if pfams.include?(pfam_id) 
-        pfam_arr.push(pfam_id) if !pfam_arr.include?(pfam_id)
-        vcounts_hash[ve] = Hash.new(0.0) if vcounts_hash[ve] == nil
-        vcounts_hash[ve][pfam_id] = perc
+      counts = l[1].chomp
+      if pfams.include?(pfam_id.scan(/(PF\d\d\d\d\d)/)[0][0])
+        perc = (counts.to_f*100/total_classified.to_f).to_f
+        hash[pfam_id] = perc
       end
     end
 
-    arr2 = []
-    vcounts_hash.each do |k,v|
-      arr1 = []
-      pfam_arr.each do |t|
-        arr1.push(v[t])
+    CSV.open("pfam2go_temp.csv", 'w') do |csv|
+      csv << ['pfam','perc']
+      hash.each do |pfam,perc|
+        csv << [pfam,perc]
       end
-      arr2.push(arr1)
-    end
-    v_arr = []
-    vcounts_hash.each do |vent,bla|
-      v_arr.push(vent)
-    end
-
-    pfam_arr.each do |pfam|
-      pfam_desc = `grep #{pfam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
-      pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[1..30]}..." : pfam_desc
-      if pfam == pfam_arr[-1]
-        print "#{pfam_desc}(#{pfam})"
-      else
-        print "#{pfam_desc}(#{pfam}),"
-      end
-    end
-    puts "\n"
-    i = 0
-    arr2.each do |rows|
-      print "#{v_arr[i]},"
-      i += 1
-      (0..rows.size-1).each do |val|
-        if val == rows.size-1
-          print "#{rows[val]}"
-        else
-          print "#{rows[val]},"
-        end
-      end
-      puts "\n" if rows != arr2[-1]
     end
     
+    `Rscript R/pfam2go.r pfam2go_temp.csv #{out} #{go}`
+    `rm pfam2go_temp.csv`
+    
   end
+      
       
   
 end

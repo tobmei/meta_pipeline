@@ -1,5 +1,5 @@
-library(permute, lib.loc = '/work/gi/software/R-3.0.2/packages')
-library(vegan, lib.loc = '/work/gi/software/R-3.0.2/packages')
+suppressPackageStartupMessages(library(permute, lib.loc = '/work/gi/software/R-3.0.2/packages'))
+suppressPackageStartupMessages(library(vegan, lib.loc = '/work/gi/software/R-3.0.2/packages'))
 
 args <- commandArgs(TRUE)
 

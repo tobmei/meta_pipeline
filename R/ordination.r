@@ -1,8 +1,7 @@
-library(permute, lib.loc = '/work/gi/software/R-3.0.2/packages')
-library(vegan, lib.loc = '/work/gi/software/R-3.0.2/packages')
-# library(corrplot, lib.loc = '/home/stud2012/tmeier/Downloads')
-library(ggplot2, lib.loc = '/work/gi/software/R-3.0.2/packages')
-library(labeling, lib.loc = '/work/gi/software/R-3.0.2/packages')
+suppressPackageStartupMessages(library(permute, lib.loc = '/work/gi/software/R-3.0.2/packages'))
+suppressPackageStartupMessages(library(vegan, lib.loc = '/work/gi/software/R-3.0.2/packages'))
+suppressPackageStartupMessages(library(ggplot2, lib.loc = '/work/gi/software/R-3.0.2/packages'))
+suppressPackageStartupMessages(library(labeling, lib.loc = '/work/gi/software/R-3.0.2/packages'))
 
 
 args <- commandArgs(TRUE)
@@ -30,7 +29,7 @@ colvec <- rainbow(length(levels(env$project)))
 with(env, colvec[project])
 plot(x,y, type='n', xlab=paste("MDS1 (",v1,"%)"), ylab=paste("MDS2 (",v2,"%)"), main='PCoA')
 with(env, points(x,y, col = colvec[env$project], pch = 15, bg = colvec[env$project]))
-with(env, legend("topright", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
+with(env, legend("bottomright", legend = levels(env$project), bty = "n", col = colvec, pch = 15, pt.bg = colvec))
 dev.off()
 
 pdf(paste0(out,'nmds.pdf'))

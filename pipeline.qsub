@@ -4,10 +4,10 @@
 #$ -cwd
 #$ -V
 #$ -S /bin/bash
-#$ -o /scratch/gi/coop/perner/metameta
+#$ -o /scratch/gi/coop/perner/metameta/cluster_out
 #$ -j y
 #$ -t 1-33
 
 
-ruby /work/gi/coop/perner/metameta/meta_pipeline/main.rb --no-preprocessing -c -i /work/gi/coop/perner/metameta/meta_pipeline/seq_meta.tsv /scratch/gi/coop/perner/metameta/vents/*_$SGE_TASK_ID
+ruby /work/gi/coop/perner/metameta/meta_pipeline/main.rb --no-preprocessing -c -o /work/gi/coop/perner/metameta/meta_pipeline/test/stats/ /work/gi/coop/perner/metameta/meta_pipeline/test/vents/*
 

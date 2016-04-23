@@ -1,5 +1,7 @@
 require_relative 'giorgios_fastq_iterator'
 
+#This script synchronizes paired read files
+
 if ARGV.size != 3
   puts 'Usage: ruby delete_unpaired_reads.rb <raw.fastq> <preprocessed1.fastq> <preprocessed2.fastq>'
   exit 0
@@ -28,13 +30,13 @@ puts "#{ARGV[1].sub('.fastq', '')}_merged1.fastq"
 puts "#{ARGV[2].sub('.fastq', '')}_merged2.fastq"
 for i in 1..orig_size.to_i/4
   f_orig.each do |unit|
-    id_orig = unit.desc.split("\s")[0]	  
+    id_orig = unit.desc.split("\s")[0].gsub("/1","")
     break
   end
 
   if next_unit2
     f_fastq1.each do |unit|
-      id_fastq1 = unit.desc.split("\s")[0]
+      id_fastq1 = unit.desc.split("\s")[0].gsub("/1","")
       unit_fastq1 = unit
       break
     end
@@ -42,7 +44,7 @@ for i in 1..orig_size.to_i/4
 
   if next_unit3
     f_fastq2.each do |unit|
-      id_fastq2 = unit.desc.split("\s")[0]
+      id_fastq2 = unit.desc.split("\s")[0].gsub("/2","")
       unit_fastq2 = unit
       break
     end

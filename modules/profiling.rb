@@ -34,14 +34,14 @@ module Profiling
       gz = Zlib::GzipReader.new(infile)
       old_id = ''
       gz.each_line do |line|
-	      l = line.split("\t")
-	      curr_id = l[0]
-	      if old_id != curr_id
-	        class_count += 1 
-	        pfam = l[1].scan(/(PF\d\d\d\d\d)/)[0][0]
-	        pfam_hash[pfam] += 1
-	      end
-	      old_id = curr_id
+        l = line.split("\t")
+        curr_id = l[0]
+        if old_id != curr_id
+          class_count += 1 
+          pfam = l[1].scan(/(PF\d\d\d\d\d)/)[0][0]
+          pfam_hash[pfam] += 1
+        end
+        old_id = curr_id
       end
       infile.close
     end
@@ -69,18 +69,18 @@ module Profiling
   def Profiling.write_classification_summary(summary,method,output)
     if !File.exists?("#{output}/classification_summary_#{method}.csv")
       CSV.open("stats/classification_summary.csv", 'w') do |csv|
-	      csv << ['vent','classified','unclassified','total']
+        csv << ['vent','classified','unclassified','total']
       end
     end
 
     CSV.open("#{output}/classification_summary_#{method}.csv", 'a') do |csv|
       summary.each do |vent,s|
-	      csv << [File.basename(vent),s[:classified],s[:unclassified],s[:total]]
+        csv << [File.basename(vent),s[:classified],s[:unclassified],s[:total]]
       end
     end
   end
    
-  def Profiling.combine(profiles_dir,out)
+  def Profiling.combine(profiles_dir,out,desc_hash)
     profile = Hash.new
     classification_summary = Hash.new
     classification_summary[:classified] = 0 
@@ -88,30 +88,31 @@ module Profiling
     classification_summary[:total] = 0 
     Dir.glob("#{profiles_dir}/*_#{out}.txt") do |file| 
       File.open(file).each_line do |line|
-	      l = line.split(',')
-	      if l.size == 3
-	        classification_summary[:classified] += l[0].chomp.to_i
-	        classification_summary[:unclassified] += l[1].chomp.to_i
-	        classification_summary[:total] += l[2].chomp.to_i
-	      else
-	        fam = l[0]
-	        freq = l[1].chomp.to_i
-	        profile[fam] = 0 if profile[fam] == nil
-	        profile[fam] += freq
-	      end
+        l = line.split(',')
+        if l.size == 3
+          classification_summary[:classified] += l[0].chomp.to_i
+          classification_summary[:unclassified] += l[1].chomp.to_i
+          classification_summary[:total] += l[2].chomp.to_i
+        else
+          fam = l[0]
+          freq = l[1].chomp.to_i
+          profile[fam] = 0 if profile[fam] == nil
+          profile[fam] += freq
+        end
       end    
     end
     
     profile = profile.sort_by{|k, v| v}.reverse
     
-    #TODO load pfamaclans into memory (hash) instead of grepping
     CSV.open("#{profiles_dir}/#{out}.txt", 'w') do |csv|
-      csv << ['pfam','count']
       profile.each do |fam,freq|
-        #pfam_desc = `grep #{fam} data/Pfam-A.clans.tsv | cut -f 5`.chomp
-        #pfam_desc = pfam_desc.length > 30 ? "#{pfam_desc[0..30]}..." : pfam_desc
-        #f.puts "#{pfam_desc.gsub(',',' ')}(#{fam}),#{freq}"
-	      csv << [fam,freq]
+        csv << [fam,freq]
+      end
+    end
+    
+    CSV.open("#{profiles_dir}/#{out}_desc.txt", 'w') do |csv|
+      profile.each do |fam,freq|
+        csv << ["#{desc_hash[fam]}(#{fam})".gsub(",",''),freq]
       end
     end
     

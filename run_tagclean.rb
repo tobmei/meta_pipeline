@@ -1,3 +1,9 @@
+#This script reads the input from tagcleaner puts it to stdout
+#Used during preprocessing
+#A predicted tag is rejected when the propability is below 10%
+#as suggested in the tagcleaner manual
+#http://tagcleaner.sourceforge.net/manual.html
+
 tag = ''
 seq = ''
 

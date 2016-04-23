@@ -1,5 +1,9 @@
 require 'csv'
 
+#This script performs a correlation of taxonomic abundances
+#calculated by taxy-pro and tara
+#Usage: ruby tara2taxypro <tara_vent> ...
+
 ARGV.each do |vent|
 
   tara = File.basename(vent).gsub(/_\d\d$/,'')
@@ -35,8 +39,6 @@ ARGV.each do |vent|
     genus = row[5]== nil || row[5] == '' ? 'Unknown' : row[5]
     count = row[index].to_f
     
-  #   krona_arr.push([count,kingdom,phylum,clas,order,family,genus]) if count != 0.0
-    
     tax_hash['kingdom'][kingdom] += count
     tax_hash['phylum'][phylum] += count 
     tax_hash['class'][clas] += count 
@@ -46,19 +48,6 @@ ARGV.each do |vent|
     total_count += count
     
   end
-
-  # krona_arr.each do |row|
-  #   row[0] = row[0] / total_count
-  # end
-
-
-  # puts "#frequency\tsuperkingdom\tphylum\tclass\torder\tfamily\tgenus"
-  # krona_arr.each do |row|
-  #   row.each do |item|
-  #     print "#{item}\t"
-  #   end
-  #   puts "\t"
-  # end
 
   tax_hash.each do |tax,count_hash|
     count_hash.each do |taxon,c|
@@ -135,7 +124,6 @@ ARGV.each do |vent|
       end
     end
 
-      
     pairs_hash = Hash.new
     metapipe_hash.each do |tax,f|
       tara_freq = tara_hash.has_key?(tax) ? tara_hash[tax] : 0.0
@@ -168,7 +156,7 @@ ARGV.each do |vent|
     Dir.glob("#{dir}/*.csv") do |file|
       input = file if file =~ /#{tax}/
     end
-    `Rscript corr.r #{input} #{tax} #{dir}/`
+    `Rscript R/corr.r #{input} #{tax} 'Metapipeline' 'Tara' #{dir}/#{tax}.pdf`
   end
   `pdftk #{dir}/kingdom.pdf #{dir}/phylum.pdf #{dir}/class.pdf #{dir}/order.pdf #{dir}/family.pdf #{dir}/genus.pdf cat output #{dir}/metapipe_vs_tara.pdf`
   `rm -f #{dir}/kingdom.pdf #{dir}/phylum.pdf #{dir}/class.pdf #{dir}/order.pdf #{dir}/family.pdf #{dir}/genus.pdf`

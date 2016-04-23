@@ -1,5 +1,5 @@
-library(ggplot2, lib.loc = '/work/gi/software/R-3.0.2/packages')
-library(labeling, lib.loc = '/work/gi/software/R-3.0.2/packages')
+suppressPackageStartupMessages(library(ggplot2, lib.loc = '/work/gi/software/R-3.0.2/packages'))
+suppressPackageStartupMessages(library(labeling, lib.loc = '/work/gi/software/R-3.0.2/packages'))
 
 
 args <- commandArgs(TRUE)

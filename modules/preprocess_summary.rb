@@ -1,6 +1,6 @@
 module Preprocess_summary
 
-  def Preprocess_summary.summary(vents)
+  def Preprocess_summary.summary(vents,out)
     summary = Hash.new
     
     vents.each do |vent|
@@ -27,13 +27,13 @@ module Preprocess_summary
     end
     
     #write summary to file 
-    if !File.exists?("stats/preprocess_summary.csv")
-      File.open("stats/preprocess_summary.csv", 'w') { |f|
+    if !File.exists?("#{out}/preprocess_summary.csv")
+      File.open("#{out}/preprocess_summary.csv", 'w') { |f|
         f.puts "vent,sequences_raw,sequences_preprocessed,avg_length_raw,avg_length_preprocessed,total_length_raw,total_length_preprocessed"
      }
     end
     
-    File.open("stats/preprocess_summary.csv", 'a') { |f|
+    File.open("#{out}/preprocess_summary.csv", 'a') { |f|
     summary.each do |vent,s|
       f.print "#{File.basename(vent)},"
       f.print "#{s['sequences_raw']},"

@@ -1,0 +1,108 @@
+========================
+Metapipeline version 1.0
+========================
+
+
+Usage
+=====
+
+At first, the script init.rb has to be executed in order to generate the
+input files options.tsv and vents_meta.tsv
+
+  $ruby init.rb <vent_root_folder> <output_directory> [accession file]
+  
+The accession file is optional. There you can specify NCBI biosample
+accession numbers. The script will then download all available metadata
+for the dataset and save it to vents_meta.tsv (ruby gem nokogiri and net required).
+The accession file must be comma separated. The first column defines 
+the vent, the second the accession id. An example file is shown below. 
+
+  vent1,SRS966646
+  vent2,SAMEA3925015
+  
+Note that the vent names must be identical with the corresponding folder names 
+in the root directory. init.rb also checks for required executables.
+If you want to add a new vent to your collection, simply integrate it in the
+directory structure (see below) and run init.rb again. The missing vents will be 
+added to options.tsv and vents_meta.tsv.
+
+After you have successfully executed init.rb, you must execute main.rb
+to start the pipeline.
+
+  $ruby main.rb (-p|--no-preprocessing) (-c|--no-classification) (-d|--no-downstream) -o <path to options.tsv and vents_meta.tsv> <input_directory> ...
+  
+You can chose which step should be performed (e.g. if you change something in 
+vents_meta.tsv for ANOSIM testing, you can just perform the downstream analysis).
+
+The summarized downstream results like ordination plots and stamp analysis are
+stored in the path you specified with -o. The other results (individual for 
+every vent, like taxonomic abundance or pfam2go mapping) are stored within
+each vent folder.
+
+
+
+Directory structure
+===================
+
+The usage of the metapipeline requires a certain directory structure. The 
+following example shows this structure.
+
+
+  vents
+    -vent1
+      -raw_reads
+        -run1234.fastq.gz
+        -run5678.fastq.gz
+    -vent2
+      -raw_reads
+        -run1245_1.fastq.gz
+        -run1245_2.fastq.gz
+    .
+    .
+    .
+    
+All metagenomes must be in one root folder (vents). The raw reads must be in 
+the folder 'raw_reads'. Due to allready high fileIO, the reads must be gzipped.
+The extension '.fastq.gz' is mandatory. Paired reads must be marked with '_1'
+and '_2', otherwise they will be treated as single. 
+
+
+
+Test case
+=========
+
+There are two test datasets in ./test in order to test the preprocessing steps. The datasets
+are very small, so preprocessing won't take long. Just run
+
+  $ruby init.rb ./test/vents ./test/stats ./test/accessions.txt
+  
+You need nokogiri in order to download the metadata. If you don't have it, just run 
+init.rb without './test/accessions.txt'.
+If everything went as expected, the folder ./test/stats was created with the files
+options.tsv and vents_meta.tsv (with or without metadata). In order to start the
+preprocessing, you must specify some parameters in options.tsv. For example
+
+  vent            platform   fosmid_based(y/n)   adapter/tag_seq  pfam2go
+  test_454        454        n                   actgca  
+  test_illumina   illumina   y                   ccgta   
+
+Now you can start the preprocessing with
+
+  $ruby main.rb -p --no-classification --no-downstream -o ./test/stats/ ./test/vents/
+  
+If everything was OK, you can find the preprocessing summary at 
+./test/stats/preprocess_summary.tsv
+
+
+
+Known bugs
+==========
+
+Unfortunately, I recently discoverd a bug while running the preprocessing steps
+on the cluster. The error accured while running fastq2fasqual (necessary for fosmid
+based metagenomes). The error message is
+
+*** Error in `bin/fastq2fasqual': free(): invalid next size (fast): 0x0000000001e19090 ***
+
+The error does not occur on the workstations. Maybe this is due to the new frontserver
+of the hpc-cluster? I have not encounterd this error before.

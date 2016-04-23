@@ -1,4 +1,10 @@
+
+#This script claculates the distance between to points defined 
+#by latitude and longitude based on the haversine formula
+#Not used in the pipeline
+
     
+
 def haversine(lat1, lon1, lat2, lon2)
   
   dec_lat1,dec_lon1 = to_decimal_degree(lat1,lon1)
@@ -46,46 +52,3 @@ def to_decimal_degree(lat,lon)
   
   return dec_lat,dec_lon
 end   
-
-
-
-#parse meta file
-locations = []
-File.open(ARGV[0]).each_line do |line|
-  line = line.split("\t")
-  next if line[0] == 'vent'
-  locations.push([line[0],line[7].chomp])
-end
-i = 0
-j = 1
-# print locations
-while i < locations.size-1
-  for k in 0..i
-    latlon_k = locations[k][1].split(',')
-    latlon_j = locations[j][1].split(',')
-    lat_k = latlon_k[0]
-    lon_k = latlon_k[1]
-    lat_j = latlon_j[0]
-    lon_j = latlon_j[1]
-    distance = haversine(lat_k,lon_k,lat_j,lon_j)
-    print k == i ? "#{distance}" : "#{distance},"
-  end
-  i += 1
-  j += 1
-  puts "\n"
-end
-    
-# for i in (0..locations.size-1)
-#   for j in (0..locations.size-1)
-#     latlon_i = locations[i][1].split(',')
-#     latlon_j = locations[j][1].split(',')
-#     lat_i = latlon_i[0]
-#     lon_i = latlon_i[1]
-#     lat_j = latlon_j[0]
-#     lon_j = latlon_j[1]
-#     distance = haversine(lat_i,lon_i,lat_j,lon_j)
-#     print j == locations.size-1 ? "#{distance}" : "#{distance},"
-#   end
-#   puts "\n"
-# end
-
