@@ -1,3 +1,6 @@
+Code of the analysis pipeline for my master thesis. The pipeline analyzes metagenomes from deep sea hydrothermal vents
+based on their functional and taxonomic profiles.
+
 ========================
 Metapipeline version 1.0
 ========================
